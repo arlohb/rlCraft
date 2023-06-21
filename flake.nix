@@ -10,6 +10,8 @@
         clang-tools
         clang
         raylib
+
+        gdb
       ];
     };
   };

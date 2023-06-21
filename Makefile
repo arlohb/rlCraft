@@ -2,7 +2,7 @@ source_files = $(wildcard src/*.c)
 out = out
 
 main:
-	clang -std=c11 -Wall -Wextra $(source_files) -lraylib -lm -o $(out)
+	clang -std=c11 -Wall -Wextra $(source_files) -lraylib -lm -g -o $(out)
 
 run: main
 	./$(out)

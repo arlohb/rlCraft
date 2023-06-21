@@ -1,0 +1,29 @@
+#ifndef _BLOCK_H
+#define _BLOCK_H
+
+#include <raylib.h>
+
+typedef enum {
+    AIR,
+    DIRT,
+    STONE,
+} Block;
+
+Color BlockColour(Block block);
+
+bool IsBlock(Block block);
+
+Block GetBlockFace(Block b1, Block b2);
+
+typedef enum {
+    PX,
+    NX,
+    PY,
+    NY,
+    PZ,
+    NZ,
+} Direction;
+
+Vector3 DirectionVector(Direction dir);
+
+#endif

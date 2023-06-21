@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include <rlgl.h>
 
+#include "3dText.h"
+
 void DrawTextCodepoint3D(Font font, int codepoint, Vector3 position, float fontSize, bool backface, Color tint) {
     // Character index position in sprite font
     // NOTE: In case a codepoint is not available in the font, index returned points to '?'
