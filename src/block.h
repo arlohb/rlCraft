@@ -9,7 +9,7 @@ typedef enum {
     STONE,
 } Block;
 
-Color BlockColour(Block block);
+Vector2 BlockTexCoords(Block block);
 
 bool IsBlock(Block block);
 

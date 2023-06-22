@@ -1,15 +1,25 @@
 #include "block.h"
 
-Color BlockColour(Block block) {
+#include "raymath.h"
+
+Vector2 BlockTexCoords(Block block) {
+    Vector2 pos;
+
     switch (block) {
         case AIR:
-            return (Color){ 0, 0, 0, 0 };
+            pos = (Vector2){ 0, 0 };
+            break;
         case DIRT:
-            return (Color){ 125, 67, 36, 255 };
+            pos = (Vector2){ 2, 0 };
+            break;
         case STONE:
-            return (Color){ 127, 127, 127, 255 };
+            pos = (Vector2){ 3, 0 };
+            break;
     }
+
+    return Vector2Scale(pos, 1.0 / 16.0);
 }
+
 Vector3 DirectionVector(Direction dir) {
     switch (dir) {
     case PX:

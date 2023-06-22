@@ -32,6 +32,12 @@ int main() {
 
     SetTargetFPS(60);
 
+    Texture worldTexture = LoadTexture("assets/Texture.png");
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = worldTexture;
+
+    Shader worldShader = LoadShader(0, "assets/world.frag");
+    model.materials[0].shader = worldShader;
+
     while (!WindowShouldClose()) {
         BeginDrawing();
 

@@ -8,26 +8,75 @@
 #include <raymath.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-void SetVertex(Mesh *mesh, size_t i, Vector3 position, Direction dir, Color colour) {
-    mesh->vertices[i * 3] = position.x;
-    mesh->vertices[i * 3 + 1] = position.y;
-    mesh->vertices[i * 3 + 2] = position.z;
+typedef struct {
+    Vector3 pos;
+    Direction dir;
+    Vector2 texCoords;
+} Face;
 
-    Vector3 normal = DirectionVector(dir);
+int NaturalTexturesOffset(Face face) {
+    int x = (int)face.pos.x;
+    int y = (int)face.pos.y;
+    int z = (int)face.pos.z;
 
-    mesh->normals[i * 3] = normal.x;
+    unsigned int seed = 0;
+    memcpy(&seed, &x, 1);
+    seed <<= 8;
+    memcpy(&seed, &y, 1);
+    seed <<= 8;
+    memcpy(&seed, &z, 1);
+    seed <<= 8;
+    memcpy(&seed, &face.dir, 1);
+
+    SetRandomSeed(seed);
+
+    return GetRandomValue(0, 3);
+}
+
+void SetVertex(Mesh *mesh, size_t i, Face face, Vector3 offset) {
+    Vector3 pos = Vector3Add(face.pos, offset);
+
+    mesh->vertices[i * 3    ] = pos.x;
+    mesh->vertices[i * 3 + 1] = pos.y;
+    mesh->vertices[i * 3 + 2] = pos.z;
+
+    Vector3 normal = DirectionVector(face.dir);
+
+    mesh->normals[i * 3    ] = normal.x;
     mesh->normals[i * 3 + 1] = normal.y;
     mesh->normals[i * 3 + 2] = normal.z;
 
-    mesh->colors[i * 4] = colour.r;
-    mesh->colors[i * 4 + 1] = colour.g;
-    mesh->colors[i * 4 + 2] = colour.b;
-    mesh->colors[i * 4 + 3] = colour.a;
+    Vector2 texOffset;
+
+    int naturalOffset = NaturalTexturesOffset(face);
+
+    switch ((i + naturalOffset) % 4) {
+        case 0:
+            texOffset = (Vector2){ 0, 1 };
+            break;
+        case 1:
+            texOffset = (Vector2){ 0, 0 };
+            break;
+        case 2:
+            texOffset = (Vector2){ 1, 0 };
+            break;
+        case 3:
+            texOffset = (Vector2){ 1, 1 };
+            break;
+    }
+
+    texOffset = Vector2Scale(texOffset, 1.0 / 16.0);
+
+    Vector2 texCoord = Vector2Add(face.texCoords, texOffset);
+
+    mesh->texcoords[i * 2    ] = texCoord.x;
+    mesh->texcoords[i * 2 + 1] = texCoord.y;
 }
 
 void SetTri(Mesh *mesh, size_t i, unsigned short a, unsigned short b, unsigned short c) {
-    mesh->indices[i * 3] = a;
+    mesh->indices[i * 3    ] = a;
     mesh->indices[i * 3 + 1] = b;
     mesh->indices[i * 3 + 2] = c;
 }
@@ -37,57 +86,64 @@ void SetTriWithVertexOffset(Mesh *mesh, size_t i, size_t offset,
     SetTri(mesh, i, a + offset, b + offset, c + offset);
 }
 
-void SetFace(Mesh *mesh, size_t i, Vector3 pos, Direction dir, Color colour) {
+void SetFace(Mesh *mesh, size_t i, Face face) {
     size_t verticesPerFace = 4;
     size_t vertexOffset = i * verticesPerFace;
     size_t trisPerFace = 2;
     size_t triOffset = i * trisPerFace;
 
-    pos.y -= 127;
+    face.pos.y -= 127;
+    
+    Vector3 o1, o2, o3, o4;
 
-    switch (dir) {
+    switch (face.dir) {
     case PX:
-        SetVertex(mesh, vertexOffset    , Vector3Add(pos, (Vector3){1, 0, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 1, Vector3Add(pos, (Vector3){1, 1, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 2, Vector3Add(pos, (Vector3){1, 1, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 3, Vector3Add(pos, (Vector3){1, 0, 0}), dir, colour);
+        o1 = (Vector3){1, 0, 1};
+        o2 = (Vector3){1, 1, 1};
+        o3 = (Vector3){1, 1, 0};
+        o4 = (Vector3){1, 0, 0};
         break;
     case NX:
-        SetVertex(mesh, vertexOffset    , Vector3Add(pos, (Vector3){0, 0, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 1, Vector3Add(pos, (Vector3){0, 1, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 2, Vector3Add(pos, (Vector3){0, 1, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 3, Vector3Add(pos, (Vector3){0, 0, 1}), dir, colour);
+        o1 = (Vector3){0, 0, 0};
+        o2 = (Vector3){0, 1, 0};
+        o3 = (Vector3){0, 1, 1};
+        o4 = (Vector3){0, 0, 1};
         break;
     case PY:
-        SetVertex(mesh, vertexOffset    , Vector3Add(pos, (Vector3){0, 1, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 1, Vector3Add(pos, (Vector3){1, 1, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 2, Vector3Add(pos, (Vector3){1, 1, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 3, Vector3Add(pos, (Vector3){0, 1, 1}), dir, colour);
+        o1 = (Vector3){0, 1, 0};
+        o2 = (Vector3){1, 1, 0};
+        o3 = (Vector3){1, 1, 1};
+        o4 = (Vector3){0, 1, 1};
         break;
     case NY:
-        SetVertex(mesh, vertexOffset    , Vector3Add(pos, (Vector3){0, 0, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 1, Vector3Add(pos, (Vector3){0, 0, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 2, Vector3Add(pos, (Vector3){1, 0, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 3, Vector3Add(pos, (Vector3){1, 0, 0}), dir, colour);
+        o1 = (Vector3){0, 0, 0};
+        o2 = (Vector3){0, 0, 1};
+        o3 = (Vector3){1, 0, 1};
+        o4 = (Vector3){1, 0, 0};
         break;
     case PZ:
-        SetVertex(mesh, vertexOffset    , Vector3Add(pos, (Vector3){0, 0, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 1, Vector3Add(pos, (Vector3){0, 1, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 2, Vector3Add(pos, (Vector3){1, 1, 1}), dir, colour);
-        SetVertex(mesh, vertexOffset + 3, Vector3Add(pos, (Vector3){1, 0, 1}), dir, colour);
+        o1 = (Vector3){0, 0, 1};
+        o2 = (Vector3){0, 1, 1};
+        o3 = (Vector3){1, 1, 1};
+        o4 = (Vector3){1, 0, 1};
         break;
     case NZ:
-        SetVertex(mesh, vertexOffset    , Vector3Add(pos, (Vector3){1, 0, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 1, Vector3Add(pos, (Vector3){1, 1, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 2, Vector3Add(pos, (Vector3){0, 1, 0}), dir, colour);
-        SetVertex(mesh, vertexOffset + 3, Vector3Add(pos, (Vector3){0, 0, 0}), dir, colour);
+        o1 = (Vector3){1, 0, 0};
+        o2 = (Vector3){1, 1, 0};
+        o3 = (Vector3){0, 1, 0};
+        o4 = (Vector3){0, 0, 0};
         break;
     default:
         break;
     }
 
+    SetVertex(mesh, vertexOffset    , face, o1);
+    SetVertex(mesh, vertexOffset + 1, face, o2);
+    SetVertex(mesh, vertexOffset + 2, face, o3);
+    SetVertex(mesh, vertexOffset + 3, face, o4);
+
     // Winding order seems to be anti-clockwise
-    SetTriWithVertexOffset(mesh, triOffset, vertexOffset, 2, 1, 0);
+    SetTriWithVertexOffset(mesh, triOffset    , vertexOffset, 2, 1, 0);
     SetTriWithVertexOffset(mesh, triOffset + 1, vertexOffset, 3, 2, 0);
 }
 
@@ -110,7 +166,7 @@ Model CreateModel(Chunk* chunk) {
                     Face* face = malloc(sizeof(Face));
                     face->pos = (Vector3){ x, y, z };
                     face->dir = PX;
-                    face->colour = BlockColour(blockFace);
+                    face->texCoords = BlockTexCoords(blockFace);
                     ListAppend(&faces, face);
                 }
 
@@ -118,7 +174,7 @@ Model CreateModel(Chunk* chunk) {
                     Face* face = malloc(sizeof(Face));
                     face->pos = (Vector3){ x, y, z };
                     face->dir = PY;
-                    face->colour = BlockColour(blockFace);
+                    face->texCoords = BlockTexCoords(blockFace);
                     ListAppend(&faces, face);
                 }
 
@@ -126,7 +182,7 @@ Model CreateModel(Chunk* chunk) {
                     Face* face = malloc(sizeof(Face));
                     face->pos = (Vector3){ x, y, z };
                     face->dir = PZ;
-                    face->colour = BlockColour(blockFace);
+                    face->texCoords = BlockTexCoords(blockFace);
                     ListAppend(&faces, face);
                 }
             }
@@ -142,13 +198,13 @@ Model CreateModel(Chunk* chunk) {
     mesh.vertices = malloc(mesh.vertexCount * 3 * sizeof(float));
     mesh.normals = malloc(mesh.vertexCount * 3 * sizeof(float));
     mesh.indices = malloc(mesh.triangleCount * 3 * sizeof(unsigned short));
-    mesh.colors = malloc(mesh.vertexCount * 4 * sizeof(unsigned char));
+    mesh.texcoords = malloc(mesh.vertexCount * 2 * sizeof(float));
 
     int i = 0;
     ListIter(faces, node) {
       Face *face = node->val;
 
-      SetFace(&mesh, i, face->pos, face->dir, face->colour);
+      SetFace(&mesh, i, *face);
 
       // I'm deleting the values,
       // but not the nodes yet,
