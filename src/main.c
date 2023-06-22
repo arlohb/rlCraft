@@ -35,7 +35,7 @@ int main() {
     Texture worldTexture = LoadTexture("assets/Texture.png");
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = worldTexture;
 
-    Shader worldShader = LoadShader(0, "assets/world.frag");
+    Shader worldShader = LoadShader("assets/world.vert", "assets/world.frag");
     model.materials[0].shader = worldShader;
 
     while (!WindowShouldClose()) {

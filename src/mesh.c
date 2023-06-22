@@ -147,6 +147,26 @@ void SetFace(Mesh *mesh, size_t i, Face face) {
     SetTriWithVertexOffset(mesh, triOffset + 1, vertexOffset, 3, 2, 0);
 }
 
+void MaybeAddFace(List* faces, Vector3 pos, Vector3 negOffset, Direction dir, Block b1, Block b2) {
+    Block blockFace = GetBlockFace(b1, b2);
+
+    if (IsBlock(b1) && !IsBlock(b2)) {
+        Face* face = malloc(sizeof(Face));
+        face->pos = pos;
+        face->dir = dir;
+        face->texCoords = BlockTexCoords(blockFace);
+        ListAppend(faces, face);
+    }
+
+    if (!IsBlock(b1) && IsBlock(b2)) {
+        Face* face = malloc(sizeof(Face));
+        face->pos = Vector3Add(pos, negOffset);
+        face->dir = dir + 1;
+        face->texCoords = BlockTexCoords(blockFace);
+        ListAppend(faces, face);
+    }
+}
+
 Model CreateModel(Chunk* chunk) {
     List faces;
     ListInit(&faces);
@@ -160,31 +180,11 @@ Model CreateModel(Chunk* chunk) {
                 Block py = ChunkGetBlock(chunk, x, y + 1, z);
                 Block pz = ChunkGetBlock(chunk, x, y, z + 1);
 
-                Block blockFace;
+                Vector3 pos = { x, y, z };
 
-                if ((blockFace = GetBlockFace(block, px))) {
-                    Face* face = malloc(sizeof(Face));
-                    face->pos = (Vector3){ x, y, z };
-                    face->dir = PX;
-                    face->texCoords = BlockTexCoords(blockFace);
-                    ListAppend(&faces, face);
-                }
-
-                if ((blockFace = GetBlockFace(block, py))) {
-                    Face* face = malloc(sizeof(Face));
-                    face->pos = (Vector3){ x, y, z };
-                    face->dir = PY;
-                    face->texCoords = BlockTexCoords(blockFace);
-                    ListAppend(&faces, face);
-                }
-
-                if ((blockFace = GetBlockFace(block, pz))) {
-                    Face* face = malloc(sizeof(Face));
-                    face->pos = (Vector3){ x, y, z };
-                    face->dir = PZ;
-                    face->texCoords = BlockTexCoords(blockFace);
-                    ListAppend(&faces, face);
-                }
+                MaybeAddFace(&faces, pos, (Vector3){ 1, 0, 0 }, PX, block, px);
+                MaybeAddFace(&faces, pos, (Vector3){ 0, 1, 0 }, PY, block, py);
+                MaybeAddFace(&faces, pos, (Vector3){ 0, 0, 1 }, PZ, block, pz);
             }
 
     // This is fine on the stack,
