@@ -201,17 +201,19 @@ Model CreateModel(Chunk* chunk) {
     mesh.texcoords = malloc(mesh.vertexCount * 2 * sizeof(float));
 
     int i = 0;
-    ListIter(faces, node) {
-      Face *face = node->val;
+    for (Node *node = faces.head; node;) {
+        Face *face = node->val;
 
-      SetFace(&mesh, i, *face);
+        SetFace(&mesh, i, *face);
 
-      // I'm deleting the values,
-      // but not the nodes yet,
-      // because idk how
-      free(face);
+        Node* next = node->next;
 
-      i++;
+        free(face);
+        free(node);
+
+        node = next;
+          
+        i++;
     }
 
     UploadMesh(&mesh, false);

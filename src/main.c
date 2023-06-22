@@ -76,6 +76,10 @@ int main() {
         EndDrawing();
     }
 
+    UnloadTexture(worldTexture);
+    UnloadShader(worldShader);
+    UnloadModel(model);
+
     CloseWindow();
 
     return 0;
