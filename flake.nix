@@ -9,7 +9,10 @@
       buildInputs = with pkgs; [
         clang-tools
         clang
-        raylib
+
+        # I copied the files from nixpkgs
+        # and updated it myself.
+        (pkgs.callPackage ./raylib.nix {})
 
         gdb
       ];

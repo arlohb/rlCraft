@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "3dText.h"
+#include "camera.h"
 #include "linkedList.h"
 #include "chunk.h"
 #include "mesh.h"
@@ -13,6 +14,8 @@
 #define HEIGHT 600
 
 int main() {
+    printf("%s\n", RAYLIB_VERSION);
+
     InitWindow(WIDTH, HEIGHT, "RLCraft");
     rlDisableBackfaceCulling();
 
@@ -22,13 +25,10 @@ int main() {
 
     Model model = CreateModel(&chunk);
 
-    Camera3D camera = {};
-    camera.position = (Vector3) { 0, 10, 10 };
-    camera.target = Vector3Zero();
-    camera.up = (Vector3) { 0, 1, 0 };
-    camera.fovy = 70;
-    camera.projection = CAMERA_PERSPECTIVE;
-    SetCameraMode(camera, CAMERA_FREE);
+    MyCamera camera = {};
+    MyCameraInit(&camera);
+
+    DisableCursor();
 
     SetTargetFPS(60);
 
@@ -39,11 +39,13 @@ int main() {
     model.materials[0].shader = worldShader;
 
     while (!WindowShouldClose()) {
+        MyCameraUpdate(&camera);
+
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
 
-            BeginMode3D(camera);
+            BeginMode3D(camera.camera);
 
                 // Draw the grid, axis, and axis labels
                 DrawGrid(10, 1);
@@ -68,8 +70,6 @@ int main() {
 
                         DrawSphere(pos, 0.1, RED);
                     }
-
-                UpdateCamera(&camera);
 
             EndMode3D();
 
