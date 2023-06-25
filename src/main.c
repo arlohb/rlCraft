@@ -13,17 +13,32 @@
 #define WIDTH 800
 #define HEIGHT 600
 
+#define CHUNKS_X 16
+#define CHUNKS_Z 16
+
 int main() {
     printf("%s\n", RAYLIB_VERSION);
 
     InitWindow(WIDTH, HEIGHT, "RLCraft");
-    rlDisableBackfaceCulling();
 
-    Chunk chunk;
-    ChunkInit(&chunk);
-    ChunkGenerate(&chunk);
+    Texture worldTexture = LoadTexture("assets/Texture.png");
+    Shader worldShader = LoadShader("assets/world.vert", "assets/world.frag");
+    Material material = LoadMaterialDefault();
+    material.maps[MATERIAL_MAP_DIFFUSE].texture = worldTexture;
+    material.shader = worldShader;
 
-    Model model = CreateModel(&chunk);
+    Chunk chunks[CHUNKS_X * CHUNKS_Z];
+    Model models[CHUNKS_X * CHUNKS_Z];
+    for(int x = 0; x < CHUNKS_X; x++)
+        for(int z = 0; z < CHUNKS_Z; z++) {
+            int i = z * CHUNKS_Z + x;
+
+            chunks[i] = (Chunk){};
+            ChunkInit(&chunks[i], (Vector2){ x, z });
+            ChunkGenerate(&chunks[i]);
+            models[i] = CreateModel(&chunks[i]);
+            models[i].materials[0] = material;
+        }
 
     MyCamera camera = {};
     MyCameraInit(&camera);
@@ -31,12 +46,6 @@ int main() {
     DisableCursor();
 
     SetTargetFPS(60);
-
-    Texture worldTexture = LoadTexture("assets/Texture.png");
-    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = worldTexture;
-
-    Shader worldShader = LoadShader("assets/world.vert", "assets/world.frag");
-    model.materials[0].shader = worldShader;
 
     while (!WindowShouldClose()) {
         MyCameraUpdate(&camera);
@@ -47,28 +56,24 @@ int main() {
 
             BeginMode3D(camera.camera);
 
-                // Draw the grid, axis, and axis labels
-                DrawGrid(10, 1);
-                DrawLine3D(Vector3Zero(), (Vector3){ 10, 0, 0 }, RED);
-                DrawText3D(GetFontDefault(), "x", (Vector3){ 10, 0, 0 }, 15, 0, 0, true, RED);
-                DrawLine3D(Vector3Zero(), (Vector3){ 0, 10, 0 }, GREEN);
-                DrawText3D(GetFontDefault(), "y", (Vector3){ 0, 10, 0 }, 15, 0, 0, true, GREEN);
-                DrawLine3D(Vector3Zero(), (Vector3){ 0, 0, 10 }, BLUE);
-                DrawText3D(GetFontDefault(), "z", (Vector3){ 0, 0, 10 }, 15, 0, 0, true, BLUE);
+                // Draw the axis and labels
+                float y = 10;
+                DrawLine3D((Vector3){ 0, y, 0 }, (Vector3){ 10, y, 0 }, RED);
+                DrawText3D(GetFontDefault(), "x", (Vector3){ 10, y, 0 }, 15, 0, 0, true, RED);
+                DrawLine3D((Vector3){ 0, y, 0 }, (Vector3){ 0, y + 10, 0 }, GREEN);
+                DrawText3D(GetFontDefault(), "y", (Vector3){ 0, y + 10, 0 }, 15, 0, 0, true, GREEN);
+                DrawLine3D((Vector3){ 0, y, 0 }, (Vector3){ 0, y, 10 }, BLUE);
+                DrawText3D(GetFontDefault(), "z", (Vector3){ 0, y, 10 }, 15, 0, 0, true, BLUE);
 
-                // Draw the model
-                DrawModel(model, Vector3Zero(), 1, WHITE);
-
-                // Draw the model vertices
-                if (false)
-                    for(int i = 0; i < model.meshes[0].vertexCount; i++) {
+                // Draw the world
+                for(int x = 0; x < CHUNKS_X; x++)
+                    for(int z = 0; z < CHUNKS_Z; z++) {
                         Vector3 pos = {
-                            model.meshes[0].vertices[i * 3],
-                            model.meshes[0].vertices[i * 3 + 1],
-                            model.meshes[0].vertices[i * 3 + 2],
+                            x * CHUNK_WIDTH - (int)(CHUNKS_X * CHUNK_WIDTH / 2),
+                            0,
+                            z * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2),
                         };
-
-                        DrawSphere(pos, 0.1, RED);
+                        DrawModel(models[z * CHUNKS_Z + x], pos, 1, WHITE);
                     }
 
             EndMode3D();
@@ -76,9 +81,10 @@ int main() {
         EndDrawing();
     }
 
-    UnloadTexture(worldTexture);
-    UnloadShader(worldShader);
-    UnloadModel(model);
+    for(int i = 0; i < CHUNKS_X * CHUNKS_Z; i++)
+        // I can't use UnloadModel as that unloads the shared material.
+        UnloadMesh(models[i].meshes[0]);
+    UnloadMaterial(material);
 
     CloseWindow();
 

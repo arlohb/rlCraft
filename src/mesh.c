@@ -92,7 +92,8 @@ void SetFace(Mesh *mesh, size_t i, Face face) {
     size_t trisPerFace = 2;
     size_t triOffset = i * trisPerFace;
 
-    face.pos.y -= 127;
+    // Center the mesh at y=0
+    face.pos.y -= CHUNK_HEIGHT / 2.0;
     
     Vector3 o1, o2, o3, o4;
 
@@ -171,19 +172,24 @@ Model CreateModel(Chunk* chunk) {
     List faces;
     ListInit(&faces);
 
-    for(int x = 0; x < CHUNK_WIDTH - 1; x++)
-        for(int z = 0; z < CHUNK_WIDTH - 1; z++)
-            for(int y = 0; y < CHUNK_HEIGHT - 1; y++) {
+    for(int x = 0; x < CHUNK_WIDTH; x++)
+        for(int z = 0; z < CHUNK_WIDTH; z++)
+            for(int y = 0; y < CHUNK_HEIGHT; y++) {
                 Block block = ChunkGetBlock(chunk, x, y, z);
-
-                Block px = ChunkGetBlock(chunk, x + 1, y, z);
-                Block py = ChunkGetBlock(chunk, x, y + 1, z);
-                Block pz = ChunkGetBlock(chunk, x, y, z + 1);
 
                 Vector3 pos = { x, y, z };
 
+                if (x == 0) MaybeAddFace(&faces, pos, (Vector3){ -1, 0, 0 }, NX, block, AIR);
+                if (y == 0) MaybeAddFace(&faces, pos, (Vector3){ 0, -1, 0 }, NY, block, AIR);
+                if (z == 0) MaybeAddFace(&faces, pos, (Vector3){ 0, 0, -1 }, NZ, block, AIR);
+
+                Block px = (x != CHUNK_WIDTH - 1) ? ChunkGetBlock(chunk, x + 1, y, z) : AIR;
                 MaybeAddFace(&faces, pos, (Vector3){ 1, 0, 0 }, PX, block, px);
+
+                Block py = (y != CHUNK_HEIGHT - 1) ? ChunkGetBlock(chunk, x, y + 1, z) : AIR;
                 MaybeAddFace(&faces, pos, (Vector3){ 0, 1, 0 }, PY, block, py);
+
+                Block pz = (z != CHUNK_WIDTH - 1) ? ChunkGetBlock(chunk, x, y, z + 1) : AIR;
                 MaybeAddFace(&faces, pos, (Vector3){ 0, 0, 1 }, PZ, block, pz);
             }
 
