@@ -19,7 +19,6 @@ void ChunkInit(Chunk* chunk, Vector2 pos);
 Block ChunkGetBlock(Chunk* chunk, int x, int y, int z);
 void ChunkSetBlock(Chunk* chunk, int x, int y, int z, Block block);
 
-Block ChunkGenBlock(int x, int y, int z);
 void ChunkGenerate(Chunk* chunk);
 
 #endif
