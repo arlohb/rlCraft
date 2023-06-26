@@ -5,6 +5,7 @@
 
 typedef enum {
     AIR,
+    GRASS,
     DIRT,
     STONE,
 } Block;

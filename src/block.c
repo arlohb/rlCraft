@@ -9,6 +9,9 @@ Vector2 BlockTexCoords(Block block) {
         case AIR:
             pos = (Vector2){ 0, 0 };
             break;
+        case GRASS:
+            pos = (Vector2){ 1, 0 };
+            break;
         case DIRT:
             pos = (Vector2){ 2, 0 };
             break;

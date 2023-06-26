@@ -19,7 +19,7 @@
 #define CHUNKS_X 16
 #define CHUNKS_Z 16
 
-#define DEBUG_NOISE true
+#define DEBUG_NOISE false
 
 int main() {
     printf("%s\n", RAYLIB_VERSION);
@@ -64,16 +64,14 @@ int main() {
                 fnl_state noise = fnlCreateState();
                 noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
                 noise.fractal_type = FNL_FRACTAL_FBM;
-                noise.octaves = 3;
-                noise.lacunarity = 1.8;
-                noise.gain = 0.8;
-                noise.frequency = 0.012;
+                noise.octaves = 4;
+                noise.lacunarity = 1.6;
+                noise.gain = 0.6;
+                noise.frequency = 0.0025;
 
                 for(int x = 0; x < WIDTH; x++)
                     for(int y = 0; y < HEIGHT; y++) {
-                        float value = Remap(fabsf(fnlGetNoise2D(&noise, x, y)), 0, 1, 0, 1);
-                        value += (float)y / HEIGHT;
-                        value = Clamp(value, 0, 1);
+                        float value = Remap(fnlGetNoise2D(&noise, x, y), -1, 1, 0, 1);
                         Color color = (Color){ value * 255.0, value * 255.0, value * 255.0, 255};
                         DrawPixel(x, y, color);
                     }
