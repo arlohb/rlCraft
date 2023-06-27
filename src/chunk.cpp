@@ -3,20 +3,24 @@
 
 #include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
-void ChunkInit(Chunk* chunk, Vector2 pos) {
-    // This *might* not be necessary to fill with 0s,
-    // but I'll do it just in case.
-    chunk->blocks = new Block[CHUNK_SIZE];
+Chunk::Chunk() {
+    blocks = new Block[CHUNK_SIZE];
 
-    chunk->pos = pos;
+    pos = { 0, 0 };
 }
 
-Block ChunkGetBlock(Chunk* chunk, int x, int y, int z) {
-    return chunk->blocks[(x * CHUNK_WIDTH * CHUNK_HEIGHT) + (z * CHUNK_HEIGHT) + y];
+Chunk::Chunk(Vector2 _pos) {
+    blocks = new Block[CHUNK_SIZE];
+
+    pos = _pos;
 }
 
-void ChunkSetBlock(Chunk* chunk, int x, int y, int z, Block block) {
-    chunk->blocks[(x * CHUNK_WIDTH * CHUNK_HEIGHT) + (z * CHUNK_HEIGHT) + y] = block;
+Block Chunk::GetBlock(int x, int y, int z) {
+    return blocks[(x * CHUNK_WIDTH * CHUNK_HEIGHT) + (z * CHUNK_HEIGHT) + y];
+}
+
+void Chunk::SetBlock(int x, int y, int z, Block block) {
+    blocks[(x * CHUNK_WIDTH * CHUNK_HEIGHT) + (z * CHUNK_HEIGHT) + y] = block;
 }
 
 struct Noise {
@@ -26,7 +30,7 @@ struct Noise {
     FastNoiseLite density;
 };
 
-Block ChunkGenBlock(Noise* noise, float depth, float squashing, int x, int y, int z) {
+Block GenBlock(Noise* noise, float depth, float squashing, int x, int y, int z) {
     float density = noise->density.GetNoise<float>(x, y, z);
     density = Remap(density, -1, 1, 0, CHUNK_HEIGHT);
     density -= y * squashing;
@@ -53,7 +57,7 @@ bool RemoveCaves(Noise* noise, int x, int y, int z) {
     return caves < 0.2;
 }
 
-void ChunkGenerate(Chunk* chunk) {
+void Chunk::Generate() {
     Noise noise;
 
     noise.erosion.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
@@ -86,8 +90,8 @@ void ChunkGenerate(Chunk* chunk) {
 
     for(int cx = 0; cx < CHUNK_WIDTH; cx++)
         for(int cz = 0; cz < CHUNK_WIDTH; cz++) {
-            int x = cx + chunk->pos.x * CHUNK_WIDTH;
-            int z = cz + chunk->pos.y * CHUNK_WIDTH;
+            int x = cx + pos.x * CHUNK_WIDTH;
+            int z = cz + pos.y * CHUNK_WIDTH;
 
             float erosion = noise.erosion.GetNoise<float>(x, z);
             float cont = noise.cont.GetNoise<float>(x, z);
@@ -97,7 +101,7 @@ void ChunkGenerate(Chunk* chunk) {
             float squashing = Remap(erosion, -1, 1, 1.6, 3.6);
 
             for(int y = 0; y < CHUNK_HEIGHT; y++) {
-                Block block = ChunkGenBlock(
+                Block block = GenBlock(
                     &noise,
                     depth,
                     squashing,
@@ -106,7 +110,7 @@ void ChunkGenerate(Chunk* chunk) {
                     z
                 );
 
-                ChunkSetBlock(chunk, cx, y, cz, block);
+                SetBlock(cx, y, cz, block);
             }
 
             int count = 0;
@@ -115,8 +119,8 @@ void ChunkGenerate(Chunk* chunk) {
                     break;
                 }
 
-                if (ChunkGetBlock(chunk, cx, y, cz) == STONE) {
-                    ChunkSetBlock(chunk, cx, y, cz, count ? DIRT : GRASS);
+                if (GetBlock(cx, y, cz) == STONE) {
+                    SetBlock(cx, y, cz, count ? DIRT : GRASS);
                     count++;
                 }
             }
@@ -124,7 +128,7 @@ void ChunkGenerate(Chunk* chunk) {
             for(int y = 0; y < CHUNK_HEIGHT; y++) {
                 bool cave = RemoveCaves(&noise, x, y, z);
 
-                if (cave) ChunkSetBlock(chunk, cx, y, cz, AIR);
+                if (cave) SetBlock(cx, y, cz, AIR);
             }
         }
 }

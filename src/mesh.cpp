@@ -164,13 +164,13 @@ void MaybeAddFace(std::vector<Face>& faces, Vector3 pos, Vector3 negOffset, Dire
     }
 }
 
-Model CreateModel(Chunk* chunk) {
+Model CreateModel(Chunk& chunk) {
     std::vector<Face> faces;
 
     for(int x = 0; x < CHUNK_WIDTH; x++)
         for(int z = 0; z < CHUNK_WIDTH; z++)
             for(int y = 0; y < CHUNK_HEIGHT; y++) {
-                Block block = ChunkGetBlock(chunk, x, y, z);
+                Block block = chunk.GetBlock(x, y, z);
 
                 Vector3 pos = { (float)x, (float)y, (float)z };
 
@@ -178,13 +178,13 @@ Model CreateModel(Chunk* chunk) {
                 if (y == 0) MaybeAddFace(faces, pos, (Vector3){ 0, -1, 0 }, NY, block, AIR);
                 if (z == 0) MaybeAddFace(faces, pos, (Vector3){ 0, 0, -1 }, NZ, block, AIR);
 
-                Block px = (x != CHUNK_WIDTH - 1) ? ChunkGetBlock(chunk, x + 1, y, z) : AIR;
+                Block px = (x != CHUNK_WIDTH - 1) ? chunk.GetBlock(x + 1, y, z) : AIR;
                 MaybeAddFace(faces, pos, (Vector3){ 1, 0, 0 }, PX, block, px);
 
-                Block py = (y != CHUNK_HEIGHT - 1) ? ChunkGetBlock(chunk, x, y + 1, z) : AIR;
+                Block py = (y != CHUNK_HEIGHT - 1) ? chunk.GetBlock(x, y + 1, z) : AIR;
                 MaybeAddFace(faces, pos, (Vector3){ 0, 1, 0 }, PY, block, py);
 
-                Block pz = (z != CHUNK_WIDTH - 1) ? ChunkGetBlock(chunk, x, y, z + 1) : AIR;
+                Block pz = (z != CHUNK_WIDTH - 1) ? chunk.GetBlock(x, y, z + 1) : AIR;
                 MaybeAddFace(faces, pos, (Vector3){ 0, 0, 1 }, PZ, block, pz);
             }
 

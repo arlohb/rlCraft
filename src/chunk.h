@@ -6,17 +6,19 @@
 #define CHUNK_HEIGHT 255
 #define CHUNK_SIZE CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT
 
-struct Chunk {
-    // This isn't world coords, its chunk coords.
-    Vector2 pos;
+class Chunk {
+    public:
+        Vector2 pos;
 
-    Block* blocks;
+        Chunk();
+        Chunk(Vector2 _pos);
+
+        Block GetBlock(int x, int y, int z);
+        void SetBlock(int x, int y, int z, Block block);
+
+        void Generate();
+
+    private:
+        Block* blocks;
 };
-
-void ChunkInit(Chunk* chunk, Vector2 pos);
-
-Block ChunkGetBlock(Chunk* chunk, int x, int y, int z);
-void ChunkSetBlock(Chunk* chunk, int x, int y, int z, Block block);
-
-void ChunkGenerate(Chunk* chunk);
 

@@ -5,5 +5,5 @@
 
 #include <raymath.h>
 
-Model CreateModel(Chunk* chunk);
+Model CreateModel(Chunk& chunk);
 

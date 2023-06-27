@@ -36,10 +36,9 @@ int main() {
             for(int z = 0; z < CHUNKS_Z; z++) {
                 int i = z * CHUNKS_Z + x;
 
-                chunks[i] = (Chunk){};
-                ChunkInit(&chunks[i], (Vector2){ (float)x, (float)z });
-                ChunkGenerate(&chunks[i]);
-                models[i] = CreateModel(&chunks[i]);
+                chunks[i].pos = (Vector2) { (float)x, (float)z };
+                chunks[i].Generate();
+                models[i] = CreateModel(chunks[i]);
                 models[i].materials[0] = material;
             }
 
