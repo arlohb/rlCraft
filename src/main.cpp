@@ -44,15 +44,14 @@ int main() {
                 models[i].materials[0] = material;
             }
 
-    MyCamera camera = {};
-    MyCameraInit(&camera);
+    MyCamera camera;
 
     DisableCursor();
 
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
-        MyCameraUpdate(&camera);
+        camera.Update();
 
         BeginDrawing();
 

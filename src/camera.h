@@ -2,17 +2,21 @@
 
 #include <raylib.h>
 
-struct MyCamera {
-    Camera3D camera;
-    Vector3 forward;
-    Vector3 up;
+class MyCamera {
+    public:
+        Camera3D camera;
+        Vector3 forward;
+        Vector3 up;
 
-    float mouseSensitivity;
-    float moveSpeed;
-    float shiftMod;
+        float mouseSensitivity;
+        float moveSpeed;
+        float shiftMod;
+
+        MyCamera();
+        void Update();
+
+    private:
+        void Rotate();
+        void Move();
 };
-
-void MyCameraInit(MyCamera* camera);
-
-void MyCameraUpdate(MyCamera* camera);
 
