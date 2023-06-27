@@ -1,5 +1,4 @@
-#ifndef _LINKED_LIST_H
-#define _LINKED_LIST_H
+#pragma once
 
 #include <cstddef>
 
@@ -19,4 +18,3 @@ void ListAppend(List* list, void* val);
 
 #define ListIter(list, node) for(Node* node = list.head; node; node = node->next)
 
-#endif

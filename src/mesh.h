@@ -1,5 +1,4 @@
-#ifndef _MESH_H
-#define _MESH_H
+#pragma once
 
 #include "linkedList.h"
 #include "block.h"
@@ -9,4 +8,3 @@
 
 Model CreateModel(Chunk* chunk);
 
-#endif
