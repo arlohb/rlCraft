@@ -8,7 +8,7 @@ void ListInit(List* list) {
 }
 
 void ListAppend(List* list, void* val) {
-    Node* node = (Node*)malloc(sizeof(Node));
+    Node* node = new Node;
     node->val = val;
     node->next = NULL;
 

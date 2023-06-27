@@ -149,7 +149,7 @@ void MaybeAddFace(List* faces, Vector3 pos, Vector3 negOffset, Direction dir, Bl
     Block blockFace = GetBlockFace(b1, b2);
 
     if (IsBlock(b1) && !IsBlock(b2)) {
-        Face* face = (Face*)malloc(sizeof(Face));
+        Face* face = new Face;
         face->pos = pos;
         face->dir = dir;
         face->texCoords = BlockTexCoords(blockFace);
@@ -157,7 +157,7 @@ void MaybeAddFace(List* faces, Vector3 pos, Vector3 negOffset, Direction dir, Bl
     }
 
     if (!IsBlock(b1) && IsBlock(b2)) {
-        Face* face = (Face*)malloc(sizeof(Face));
+        Face* face = new Face;
         face->pos = Vector3Add(pos, negOffset);
         face->dir = (Direction)((int)dir + 1);
         face->texCoords = BlockTexCoords(blockFace);
@@ -198,10 +198,10 @@ Model CreateModel(Chunk* chunk) {
 
     mesh.triangleCount = faces.length * 2;
     mesh.vertexCount = faces.length * 4;
-    mesh.vertices = (float*)malloc(mesh.vertexCount * 3 * sizeof(float));
-    mesh.normals = (float*)malloc(mesh.vertexCount * 3 * sizeof(float));
-    mesh.indices = (unsigned short*)malloc(mesh.triangleCount * 3 * sizeof(unsigned short));
-    mesh.texcoords = (float*)malloc(mesh.vertexCount * 2 * sizeof(float));
+    mesh.vertices = new float[mesh.vertexCount * 3];
+    mesh.normals = new float[mesh.vertexCount * 3];
+    mesh.indices = new unsigned short[mesh.triangleCount * 3];
+    mesh.texcoords = new float[mesh.vertexCount * 2];
 
     int i = 0;
     for (Node *node = faces.head; node;) {
@@ -211,8 +211,8 @@ Model CreateModel(Chunk* chunk) {
 
         Node* next = node->next;
 
-        free(face);
-        free(node);
+        delete face;
+        delete node;
 
         node = next;
           
