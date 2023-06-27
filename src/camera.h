@@ -2,7 +2,7 @@
 
 #include <raylib.h>
 
-typedef struct {
+struct MyCamera {
     Camera3D camera;
     Vector3 forward;
     Vector3 up;
@@ -10,7 +10,7 @@ typedef struct {
     float mouseSensitivity;
     float moveSpeed;
     float shiftMod;
-} MyCamera;
+};
 
 void MyCameraInit(MyCamera* camera);
 

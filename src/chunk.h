@@ -6,12 +6,12 @@
 #define CHUNK_HEIGHT 255
 #define CHUNK_SIZE CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT
 
-typedef struct {
+struct Chunk {
     // This isn't world coords, its chunk coords.
     Vector2 pos;
 
     Block* blocks;
-} Chunk;
+};
 
 void ChunkInit(Chunk* chunk, Vector2 pos);
 

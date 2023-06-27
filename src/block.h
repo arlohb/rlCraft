@@ -2,12 +2,12 @@
 
 #include <raylib.h>
 
-typedef enum {
+enum Block {
     AIR,
     GRASS,
     DIRT,
     STONE,
-} Block;
+};
 
 Vector2 BlockTexCoords(Block block);
 
@@ -15,14 +15,14 @@ bool IsBlock(Block block);
 
 Block GetBlockFace(Block b1, Block b2);
 
-typedef enum {
+enum Direction {
     PX,
     NX,
     PY,
     NY,
     PZ,
     NZ,
-} Direction;
+};
 
 Vector3 DirectionVector(Direction dir);
 

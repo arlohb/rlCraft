@@ -7,11 +7,11 @@
 #include <raylib.h>
 #include <raymath.h>
 
-typedef struct {
+struct Face {
     Vector3 pos;
     Direction dir;
     Vector2 texCoords;
-} Face;
+};
 
 int NaturalTexturesOffset(Face face) {
     int x = (int)face.pos.x;

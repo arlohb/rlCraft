@@ -2,16 +2,16 @@
 
 #include <cstddef>
 
-typedef struct Node {
+struct Node {
     void* val;
     struct Node* next;
-} Node;
+};
 
-typedef struct {
+struct List {
     Node* head;
     Node* tail;
     size_t length;
-} List;
+};
 
 void ListInit(List* list);
 void ListAppend(List* list, void* val);

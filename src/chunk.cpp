@@ -19,12 +19,12 @@ void ChunkSetBlock(Chunk* chunk, int x, int y, int z, Block block) {
     chunk->blocks[(x * CHUNK_WIDTH * CHUNK_HEIGHT) + (z * CHUNK_HEIGHT) + y] = block;
 }
 
-typedef struct {
+struct Noise {
     fnl_state erosion;
     fnl_state cont;
     fnl_state pv;
     fnl_state density;
-} Noise;
+};
 
 Block ChunkGenBlock(Noise* noise, float depth, float squashing, int x, int y, int z) {
     float density = fnlGetNoise3D(&noise->density, x, y, z);
