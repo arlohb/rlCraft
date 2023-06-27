@@ -1,5 +1,5 @@
 #include "linkedList.h"
-#include <stdlib.h>
+#include <cstdlib>
 
 void ListInit(List* list) {
     list->head = NULL;

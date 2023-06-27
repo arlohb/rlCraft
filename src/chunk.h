@@ -1,5 +1,4 @@
-#ifndef _CHUNK_H
-#define _CHUNK_H
+#pragma once
 
 #include "block.h"
 
@@ -21,4 +20,3 @@ void ChunkSetBlock(Chunk* chunk, int x, int y, int z, Block block);
 
 void ChunkGenerate(Chunk* chunk);
 
-#endif

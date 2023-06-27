@@ -1,5 +1,4 @@
-#ifndef _CAMERA_H
-#define _CAMERA_H
+#pragma once
 
 #include <raylib.h>
 
@@ -17,4 +16,3 @@ void MyCameraInit(MyCamera* camera);
 
 void MyCameraUpdate(MyCamera* camera);
 
-#endif

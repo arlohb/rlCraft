@@ -3,12 +3,9 @@
 #include "chunk.h"
 #include "mesh.h"
 
-#include <stddef.h>
+#include <cstring>
 #include <raylib.h>
 #include <raymath.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 typedef struct {
     Vector3 pos;

@@ -1,8 +1,7 @@
-#include <stdio.h>
+#include <iostream>
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
-#include <stdlib.h>
 
 #include "3dText.h"
 #include "camera.h"
@@ -22,7 +21,7 @@
 #define DEBUG_NOISE false
 
 int main() {
-    printf("%s\n", RAYLIB_VERSION);
+    std::cout << RAYLIB_VERSION << std::endl;
 
     InitWindow(WIDTH, HEIGHT, "RLCraft");
 

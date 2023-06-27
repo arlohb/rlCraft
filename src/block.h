@@ -1,5 +1,4 @@
-#ifndef _BLOCK_H
-#define _BLOCK_H
+#pragma once
 
 #include <raylib.h>
 
@@ -27,4 +26,3 @@ typedef enum {
 
 Vector3 DirectionVector(Direction dir);
 
-#endif

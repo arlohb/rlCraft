@@ -1,10 +1,10 @@
 #include "camera.h"
 
-#include <stdio.h>
+#include <iostream>
 #include "raymath.h"
 
 void PrintVector3(Vector3 v) {
-    printf("%f, %f, %f\n", v.x, v.y, v.z);
+    std::cout << v.x << " " << v.y << " " << v.z << std::endl;
 }
 
 void MyCameraInit(MyCamera *camera) {
