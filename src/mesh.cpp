@@ -1,8 +1,7 @@
-#include "linkedList.h"
 #include "block.h"
 #include "chunk.h"
-#include "mesh.h"
 
+#include <vector>
 #include <cstring>
 #include <raylib.h>
 #include <raymath.h>
@@ -145,29 +144,28 @@ void SetFace(Mesh *mesh, size_t i, Face face) {
     SetTriWithVertexOffset(mesh, triOffset + 1, vertexOffset, 3, 2, 0);
 }
 
-void MaybeAddFace(List* faces, Vector3 pos, Vector3 negOffset, Direction dir, Block b1, Block b2) {
+void MaybeAddFace(std::vector<Face>& faces, Vector3 pos, Vector3 negOffset, Direction dir, Block b1, Block b2) {
     Block blockFace = GetBlockFace(b1, b2);
 
     if (IsBlock(b1) && !IsBlock(b2)) {
-        Face* face = new Face;
-        face->pos = pos;
-        face->dir = dir;
-        face->texCoords = BlockTexCoords(blockFace);
-        ListAppend(faces, face);
+        Face face;
+        face.pos = pos;
+        face.dir = dir;
+        face.texCoords = BlockTexCoords(blockFace);
+        faces.push_back(face);
     }
 
     if (!IsBlock(b1) && IsBlock(b2)) {
-        Face* face = new Face;
-        face->pos = Vector3Add(pos, negOffset);
-        face->dir = (Direction)((int)dir + 1);
-        face->texCoords = BlockTexCoords(blockFace);
-        ListAppend(faces, face);
+        Face face;
+        face.pos = Vector3Add(pos, negOffset);
+        face.dir = (Direction)((int)dir + 1);
+        face.texCoords = BlockTexCoords(blockFace);
+        faces.push_back(face);
     }
 }
 
 Model CreateModel(Chunk* chunk) {
-    List faces;
-    ListInit(&faces);
+    std::vector<Face> faces;
 
     for(int x = 0; x < CHUNK_WIDTH; x++)
         for(int z = 0; z < CHUNK_WIDTH; z++)
@@ -176,18 +174,18 @@ Model CreateModel(Chunk* chunk) {
 
                 Vector3 pos = { (float)x, (float)y, (float)z };
 
-                if (x == 0) MaybeAddFace(&faces, pos, (Vector3){ -1, 0, 0 }, NX, block, AIR);
-                if (y == 0) MaybeAddFace(&faces, pos, (Vector3){ 0, -1, 0 }, NY, block, AIR);
-                if (z == 0) MaybeAddFace(&faces, pos, (Vector3){ 0, 0, -1 }, NZ, block, AIR);
+                if (x == 0) MaybeAddFace(faces, pos, (Vector3){ -1, 0, 0 }, NX, block, AIR);
+                if (y == 0) MaybeAddFace(faces, pos, (Vector3){ 0, -1, 0 }, NY, block, AIR);
+                if (z == 0) MaybeAddFace(faces, pos, (Vector3){ 0, 0, -1 }, NZ, block, AIR);
 
                 Block px = (x != CHUNK_WIDTH - 1) ? ChunkGetBlock(chunk, x + 1, y, z) : AIR;
-                MaybeAddFace(&faces, pos, (Vector3){ 1, 0, 0 }, PX, block, px);
+                MaybeAddFace(faces, pos, (Vector3){ 1, 0, 0 }, PX, block, px);
 
                 Block py = (y != CHUNK_HEIGHT - 1) ? ChunkGetBlock(chunk, x, y + 1, z) : AIR;
-                MaybeAddFace(&faces, pos, (Vector3){ 0, 1, 0 }, PY, block, py);
+                MaybeAddFace(faces, pos, (Vector3){ 0, 1, 0 }, PY, block, py);
 
                 Block pz = (z != CHUNK_WIDTH - 1) ? ChunkGetBlock(chunk, x, y, z + 1) : AIR;
-                MaybeAddFace(&faces, pos, (Vector3){ 0, 0, 1 }, PZ, block, pz);
+                MaybeAddFace(faces, pos, (Vector3){ 0, 0, 1 }, PZ, block, pz);
             }
 
     // This is fine on the stack,
@@ -196,26 +194,17 @@ Model CreateModel(Chunk* chunk) {
     // and LoadModelFromMesh takes by value.
     Mesh mesh = {};
 
-    mesh.triangleCount = faces.length * 2;
-    mesh.vertexCount = faces.length * 4;
+    mesh.triangleCount = faces.size() * 2;
+    mesh.vertexCount = faces.size() * 4;
     mesh.vertices = new float[mesh.vertexCount * 3];
     mesh.normals = new float[mesh.vertexCount * 3];
     mesh.indices = new unsigned short[mesh.triangleCount * 3];
     mesh.texcoords = new float[mesh.vertexCount * 2];
 
     int i = 0;
-    for (Node *node = faces.head; node;) {
-        Face *face = (Face*)node->val;
+    for(Face face : faces) {
+        SetFace(&mesh, i, face);
 
-        SetFace(&mesh, i, *face);
-
-        Node* next = node->next;
-
-        delete face;
-        delete node;
-
-        node = next;
-          
         i++;
     }
 
