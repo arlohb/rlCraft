@@ -40,7 +40,7 @@ int main() {
                 int i = z * CHUNKS_Z + x;
 
                 chunks[i] = (Chunk){};
-                ChunkInit(&chunks[i], (Vector2){ x, z });
+                ChunkInit(&chunks[i], (Vector2){ (float)x, (float)z });
                 ChunkGenerate(&chunks[i]);
                 models[i] = CreateModel(&chunks[i]);
                 models[i].materials[0] = material;
@@ -72,7 +72,8 @@ int main() {
                 for(int x = 0; x < WIDTH; x++)
                     for(int y = 0; y < HEIGHT; y++) {
                         float value = Remap(fnlGetNoise2D(&noise, x, y), -1, 1, 0, 1);
-                        Color color = (Color){ value * 255.0, value * 255.0, value * 255.0, 255};
+                        unsigned char gray = (unsigned char)(value * 255.0);
+                        Color color = (Color){ gray, gray, gray, 255};
                         DrawPixel(x, y, color);
                     }
             } else {
@@ -91,9 +92,9 @@ int main() {
                     for(int x = 0; x < CHUNKS_X; x++)
                         for(int z = 0; z < CHUNKS_Z; z++) {
                             Vector3 pos = {
-                                x * CHUNK_WIDTH - (int)(CHUNKS_X * CHUNK_WIDTH / 2),
+                                (float)(x * CHUNK_WIDTH - (int)(CHUNKS_X * CHUNK_WIDTH / 2)),
                                 0,
-                                z * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2),
+                                (float)(z * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2)),
                             };
                             DrawModel(models[z * CHUNKS_Z + x], pos, 1, WHITE);
                         }

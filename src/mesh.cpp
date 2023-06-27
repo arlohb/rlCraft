@@ -152,7 +152,7 @@ void MaybeAddFace(List* faces, Vector3 pos, Vector3 negOffset, Direction dir, Bl
     Block blockFace = GetBlockFace(b1, b2);
 
     if (IsBlock(b1) && !IsBlock(b2)) {
-        Face* face = malloc(sizeof(Face));
+        Face* face = (Face*)malloc(sizeof(Face));
         face->pos = pos;
         face->dir = dir;
         face->texCoords = BlockTexCoords(blockFace);
@@ -160,9 +160,9 @@ void MaybeAddFace(List* faces, Vector3 pos, Vector3 negOffset, Direction dir, Bl
     }
 
     if (!IsBlock(b1) && IsBlock(b2)) {
-        Face* face = malloc(sizeof(Face));
+        Face* face = (Face*)malloc(sizeof(Face));
         face->pos = Vector3Add(pos, negOffset);
-        face->dir = dir + 1;
+        face->dir = (Direction)((int)dir + 1);
         face->texCoords = BlockTexCoords(blockFace);
         ListAppend(faces, face);
     }
@@ -177,7 +177,7 @@ Model CreateModel(Chunk* chunk) {
             for(int y = 0; y < CHUNK_HEIGHT; y++) {
                 Block block = ChunkGetBlock(chunk, x, y, z);
 
-                Vector3 pos = { x, y, z };
+                Vector3 pos = { (float)x, (float)y, (float)z };
 
                 if (x == 0) MaybeAddFace(&faces, pos, (Vector3){ -1, 0, 0 }, NX, block, AIR);
                 if (y == 0) MaybeAddFace(&faces, pos, (Vector3){ 0, -1, 0 }, NY, block, AIR);
@@ -201,14 +201,14 @@ Model CreateModel(Chunk* chunk) {
 
     mesh.triangleCount = faces.length * 2;
     mesh.vertexCount = faces.length * 4;
-    mesh.vertices = malloc(mesh.vertexCount * 3 * sizeof(float));
-    mesh.normals = malloc(mesh.vertexCount * 3 * sizeof(float));
-    mesh.indices = malloc(mesh.triangleCount * 3 * sizeof(unsigned short));
-    mesh.texcoords = malloc(mesh.vertexCount * 2 * sizeof(float));
+    mesh.vertices = (float*)malloc(mesh.vertexCount * 3 * sizeof(float));
+    mesh.normals = (float*)malloc(mesh.vertexCount * 3 * sizeof(float));
+    mesh.indices = (unsigned short*)malloc(mesh.triangleCount * 3 * sizeof(unsigned short));
+    mesh.texcoords = (float*)malloc(mesh.vertexCount * 2 * sizeof(float));
 
     int i = 0;
     for (Node *node = faces.head; node;) {
-        Face *face = node->val;
+        Face *face = (Face*)node->val;
 
         SetFace(&mesh, i, *face);
 

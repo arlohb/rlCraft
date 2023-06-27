@@ -9,7 +9,7 @@
 void ChunkInit(Chunk* chunk, Vector2 pos) {
     // This *might* not be necessary to fill with 0s,
     // but I'll do it just in case.
-    chunk->blocks = calloc(CHUNK_SIZE, sizeof(Block));
+    chunk->blocks = (Block*)calloc(CHUNK_SIZE, sizeof(Block));
 
     chunk->pos = pos;
 }
