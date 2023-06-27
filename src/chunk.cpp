@@ -1,7 +1,7 @@
 #include "chunk.h"
 #include "raymath.h"
 
-#include "../FastNoiseLite/C/FastNoiseLite.h"
+#include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
 void ChunkInit(Chunk* chunk, Vector2 pos) {
     // This *might* not be necessary to fill with 0s,
@@ -20,14 +20,14 @@ void ChunkSetBlock(Chunk* chunk, int x, int y, int z, Block block) {
 }
 
 struct Noise {
-    fnl_state erosion;
-    fnl_state cont;
-    fnl_state pv;
-    fnl_state density;
+    FastNoiseLite erosion;
+    FastNoiseLite cont;
+    FastNoiseLite pv;
+    FastNoiseLite density;
 };
 
 Block ChunkGenBlock(Noise* noise, float depth, float squashing, int x, int y, int z) {
-    float density = fnlGetNoise3D(&noise->density, x, y, z);
+    float density = noise->density.GetNoise<float>(x, y, z);
     density = Remap(density, -1, 1, 0, CHUNK_HEIGHT);
     density -= y * squashing;
     density += CHUNK_HEIGHT;
@@ -46,57 +46,52 @@ Block ChunkGenBlock(Noise* noise, float depth, float squashing, int x, int y, in
 }
 
 bool RemoveCaves(Noise* noise, int x, int y, int z) {
-    float caves = fabsf(fnlGetNoise3D(&noise->pv, x, y, z));
+    float caves = fabsf(noise->pv.GetNoise<float>(x, y, z));
     caves += ((float)y / CHUNK_HEIGHT / 4);
-    caves += Remap(Clamp(fnlGetNoise3D(&noise->cont, x * 0.6 + 1000, y * 0.6, z * 0.6), -1, 0), -1, 0, 0.5, 0);
+    caves += Remap(Clamp(noise->cont.GetNoise(x * 0.6 + 1000, y * 0.6, z * 0.6), -1, 0), -1, 0, 0.5, 0);
 
     return caves < 0.2;
 }
 
 void ChunkGenerate(Chunk* chunk) {
-    Noise noise = {
-        .erosion = fnlCreateState(),
-        .cont = fnlCreateState(),
-        .pv = fnlCreateState(),
-        .density = fnlCreateState(),
-    };
+    Noise noise;
 
-    noise.erosion.noise_type = FNL_NOISE_OPENSIMPLEX2;
-    noise.erosion.fractal_type = FNL_FRACTAL_FBM;
-    noise.erosion.octaves = 4;
-    noise.erosion.lacunarity = 1.6;
-    noise.erosion.gain = 0.6;
-    noise.erosion.frequency = 0.0025;
+    noise.erosion.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    noise.erosion.SetFractalType(FastNoiseLite::FractalType_FBm);
+    noise.erosion.SetFractalOctaves(4);
+    noise.erosion.SetFractalLacunarity(1.6);
+    noise.erosion.SetFractalGain(0.6);
+    noise.erosion.SetFrequency(0.0025);
 
-    noise.cont.noise_type = FNL_NOISE_OPENSIMPLEX2;
-    noise.cont.fractal_type = FNL_FRACTAL_FBM;
-    noise.cont.octaves = 5;
-    noise.cont.lacunarity = 1.9;
-    noise.cont.gain = 0.5;
-    noise.cont.frequency = 0.004;
+    noise.cont.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    noise.cont.SetFractalType(FastNoiseLite::FractalType_FBm);
+    noise.cont.SetFractalOctaves(5);
+    noise.cont.SetFractalLacunarity(1.9);
+    noise.cont.SetFractalGain(0.5);
+    noise.cont.SetFrequency(0.004);
 
-    noise.pv.noise_type = FNL_NOISE_OPENSIMPLEX2;
-    noise.pv.fractal_type = FNL_FRACTAL_FBM;
-    noise.pv.octaves = 3;
-    noise.pv.lacunarity = 1.8;
-    noise.pv.gain = 0.8;
-    noise.pv.frequency = 0.016;
+    noise.pv.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    noise.pv.SetFractalType(FastNoiseLite::FractalType_FBm);
+    noise.pv.SetFractalOctaves(3);
+    noise.pv.SetFractalLacunarity(1.8);
+    noise.pv.SetFractalGain(0.8);
+    noise.pv.SetFrequency(0.016);
 
-    noise.density.noise_type = FNL_NOISE_OPENSIMPLEX2;
-    noise.density.fractal_type = FNL_FRACTAL_FBM;
-    noise.density.octaves = 5;
-    noise.density.lacunarity = 1.9;
-    noise.density.gain = 0.5;
-    noise.density.frequency = 0.01;
+    noise.density.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    noise.density.SetFractalType(FastNoiseLite::FractalType_FBm);
+    noise.density.SetFractalOctaves(5);
+    noise.density.SetFractalLacunarity(1.9);
+    noise.density.SetFractalGain(0.5);
+    noise.density.SetFrequency(0.01);
 
     for(int cx = 0; cx < CHUNK_WIDTH; cx++)
         for(int cz = 0; cz < CHUNK_WIDTH; cz++) {
             int x = cx + chunk->pos.x * CHUNK_WIDTH;
             int z = cz + chunk->pos.y * CHUNK_WIDTH;
 
-            float erosion = fnlGetNoise2D(&noise.erosion, x, z);
-            float cont = fnlGetNoise2D(&noise.cont, x, z);
-            float pv = fabsf(fnlGetNoise2D(&noise.pv, x, z));
+            float erosion = noise.erosion.GetNoise<float>(x, z);
+            float cont = noise.cont.GetNoise<float>(x, z);
+            float pv = fabsf(noise.pv.GetNoise<float>(x, z));
 
             float depth = Remap(cont, -1, 1, 0, CHUNK_HEIGHT) + pv * 25;
             float squashing = Remap(erosion, -1, 1, 1.6, 3.6);

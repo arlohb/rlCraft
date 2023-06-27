@@ -8,8 +8,7 @@
 #include "chunk.h"
 #include "mesh.h"
 
-#define FNL_IMPL
-#include "../FastNoiseLite/C/FastNoiseLite.h"
+#include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -58,17 +57,17 @@ int main() {
             ClearBackground(RAYWHITE);
 
             if (DEBUG_NOISE) {
-                fnl_state noise = fnlCreateState();
-                noise.noise_type = FNL_NOISE_OPENSIMPLEX2;
-                noise.fractal_type = FNL_FRACTAL_FBM;
-                noise.octaves = 4;
-                noise.lacunarity = 1.6;
-                noise.gain = 0.6;
-                noise.frequency = 0.0025;
+                FastNoiseLite noise;
+                noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+                noise.SetFractalType(FastNoiseLite::FractalType_FBm);
+                noise.SetFractalOctaves(4);
+                noise.SetFractalLacunarity(1.6);
+                noise.SetFractalGain(0.6);
+                noise.SetFrequency(0.0025);
 
                 for(int x = 0; x < WIDTH; x++)
                     for(int y = 0; y < HEIGHT; y++) {
-                        float value = Remap(fnlGetNoise2D(&noise, x, y), -1, 1, 0, 1);
+                        float value = Remap(noise.GetNoise<float>(x, y), -1, 1, 0, 1);
                         unsigned char gray = (unsigned char)(value * 255.0);
                         Color color = (Color){ gray, gray, gray, 255};
                         DrawPixel(x, y, color);
