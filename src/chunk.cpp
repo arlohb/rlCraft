@@ -1,12 +1,11 @@
 #include "chunk.h"
-#include "raymath.h"
 
 #include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
 Chunk::Chunk() {
     blocks = new Block[CHUNK_SIZE];
 
-    pos = { 0, 0 };
+    pos = rl::Vector2::Zero();
 }
 
 Chunk::Chunk(Vector2 _pos) {
@@ -30,8 +29,8 @@ struct Noise {
     FastNoiseLite density;
 };
 
-Block GenBlock(Noise* noise, float depth, float squashing, int x, int y, int z) {
-    float density = noise->density.GetNoise<float>(x, y, z);
+Block GenBlock(Noise& noise, float depth, float squashing, int x, int y, int z) {
+    float density = noise.density.GetNoise<float>(x, y, z);
     density = Remap(density, -1, 1, 0, CHUNK_HEIGHT);
     density -= y * squashing;
     density += CHUNK_HEIGHT;
@@ -49,10 +48,10 @@ Block GenBlock(Noise* noise, float depth, float squashing, int x, int y, int z) 
     return block;
 }
 
-bool RemoveCaves(Noise* noise, int x, int y, int z) {
-    float caves = fabsf(noise->pv.GetNoise<float>(x, y, z));
+bool RemoveCaves(Noise& noise, int x, int y, int z) {
+    float caves = fabsf(noise.pv.GetNoise<float>(x, y, z));
     caves += ((float)y / CHUNK_HEIGHT / 4);
-    caves += Remap(Clamp(noise->cont.GetNoise(x * 0.6 + 1000, y * 0.6, z * 0.6), -1, 0), -1, 0, 0.5, 0);
+    caves += Remap(Clamp(noise.cont.GetNoise(x * 0.6 + 1000, y * 0.6, z * 0.6), -1, 0), -1, 0, 0.5, 0);
 
     return caves < 0.2;
 }
@@ -102,7 +101,7 @@ void Chunk::Generate() {
 
             for(int y = 0; y < CHUNK_HEIGHT; y++) {
                 Block block = GenBlock(
-                    &noise,
+                    noise,
                     depth,
                     squashing,
                     x,
@@ -126,7 +125,7 @@ void Chunk::Generate() {
             }
 
             for(int y = 0; y < CHUNK_HEIGHT; y++) {
-                bool cave = RemoveCaves(&noise, x, y, z);
+                bool cave = RemoveCaves(noise, x, y, z);
 
                 if (cave) SetBlock(cx, y, cz, AIR);
             }

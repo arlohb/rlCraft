@@ -1,12 +1,12 @@
 #pragma once
 
-#include <raylib.h>
+#include "rl.h"
 
 class MyCamera {
     public:
         Camera3D camera;
-        Vector3 forward;
-        Vector3 up;
+        rl::Vector3 forward;
+        rl::Vector3 up;
 
         float mouseSensitivity;
         float moveSpeed;

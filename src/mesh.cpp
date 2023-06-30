@@ -7,9 +7,9 @@
 #include <raymath.h>
 
 struct Face {
-    Vector3 pos;
+    rl::Vector3 pos;
     Direction dir;
-    Vector2 texCoords;
+    rl::Vector2 texCoords;
 };
 
 int NaturalTexturesOffset(Face face) {
@@ -31,41 +31,41 @@ int NaturalTexturesOffset(Face face) {
     return GetRandomValue(0, 3);
 }
 
-void SetVertex(Mesh *mesh, size_t i, Face face, Vector3 offset) {
-    Vector3 pos = Vector3Add(face.pos, offset);
+void SetVertex(Mesh *mesh, size_t i, Face face, rl::Vector3 offset) {
+    rl::Vector3 pos = face.pos + offset;
 
     mesh->vertices[i * 3    ] = pos.x;
     mesh->vertices[i * 3 + 1] = pos.y;
     mesh->vertices[i * 3 + 2] = pos.z;
 
-    Vector3 normal = DirectionVector(face.dir);
+    rl::Vector3 normal = DirectionVector(face.dir);
 
     mesh->normals[i * 3    ] = normal.x;
     mesh->normals[i * 3 + 1] = normal.y;
     mesh->normals[i * 3 + 2] = normal.z;
 
-    Vector2 texOffset;
+    rl::Vector2 texOffset;
 
     int naturalOffset = NaturalTexturesOffset(face);
 
     switch ((i + naturalOffset) % 4) {
         case 0:
-            texOffset = (Vector2){ 0, 1 };
+            texOffset = rl::Vector2(0, 1);
             break;
         case 1:
-            texOffset = (Vector2){ 0, 0 };
+            texOffset = rl::Vector2(0, 0);
             break;
         case 2:
-            texOffset = (Vector2){ 1, 0 };
+            texOffset = rl::Vector2(1, 0);
             break;
         case 3:
-            texOffset = (Vector2){ 1, 1 };
+            texOffset = rl::Vector2(1, 1);
             break;
     }
 
-    texOffset = Vector2Scale(texOffset, 1.0 / 16.0);
+    texOffset /= 16.0;
 
-    Vector2 texCoord = Vector2Add(face.texCoords, texOffset);
+    rl::Vector2 texCoord = face.texCoords + texOffset;
 
     mesh->texcoords[i * 2    ] = texCoord.x;
     mesh->texcoords[i * 2 + 1] = texCoord.y;
@@ -91,44 +91,44 @@ void SetFace(Mesh *mesh, size_t i, Face face) {
     // Center the mesh at y=0
     face.pos.y -= CHUNK_HEIGHT / 2.0;
     
-    Vector3 o1, o2, o3, o4;
+    rl::Vector3 o1, o2, o3, o4;
 
     switch (face.dir) {
     case PX:
-        o1 = (Vector3){1, 0, 1};
-        o2 = (Vector3){1, 1, 1};
-        o3 = (Vector3){1, 1, 0};
-        o4 = (Vector3){1, 0, 0};
+        o1 = rl::Vector3(1, 0, 1);
+        o2 = rl::Vector3(1, 1, 1);
+        o3 = rl::Vector3(1, 1, 0);
+        o4 = rl::Vector3(1, 0, 0);
         break;
     case NX:
-        o1 = (Vector3){0, 0, 0};
-        o2 = (Vector3){0, 1, 0};
-        o3 = (Vector3){0, 1, 1};
-        o4 = (Vector3){0, 0, 1};
+        o1 = rl::Vector3(0, 0, 0);
+        o2 = rl::Vector3(0, 1, 0);
+        o3 = rl::Vector3(0, 1, 1);
+        o4 = rl::Vector3(0, 0, 1);
         break;
     case PY:
-        o1 = (Vector3){0, 1, 0};
-        o2 = (Vector3){1, 1, 0};
-        o3 = (Vector3){1, 1, 1};
-        o4 = (Vector3){0, 1, 1};
+        o1 = rl::Vector3(0, 1, 0);
+        o2 = rl::Vector3(1, 1, 0);
+        o3 = rl::Vector3(1, 1, 1);
+        o4 = rl::Vector3(0, 1, 1);
         break;
     case NY:
-        o1 = (Vector3){0, 0, 0};
-        o2 = (Vector3){0, 0, 1};
-        o3 = (Vector3){1, 0, 1};
-        o4 = (Vector3){1, 0, 0};
+        o1 = rl::Vector3(0, 0, 0);
+        o2 = rl::Vector3(0, 0, 1);
+        o3 = rl::Vector3(1, 0, 1);
+        o4 = rl::Vector3(1, 0, 0);
         break;
     case PZ:
-        o1 = (Vector3){0, 0, 1};
-        o2 = (Vector3){0, 1, 1};
-        o3 = (Vector3){1, 1, 1};
-        o4 = (Vector3){1, 0, 1};
+        o1 = rl::Vector3(0, 0, 1);
+        o2 = rl::Vector3(0, 1, 1);
+        o3 = rl::Vector3(1, 1, 1);
+        o4 = rl::Vector3(1, 0, 1);
         break;
     case NZ:
-        o1 = (Vector3){1, 0, 0};
-        o2 = (Vector3){1, 1, 0};
-        o3 = (Vector3){0, 1, 0};
-        o4 = (Vector3){0, 0, 0};
+        o1 = rl::Vector3(1, 0, 0);
+        o2 = rl::Vector3(1, 1, 0);
+        o3 = rl::Vector3(0, 1, 0);
+        o4 = rl::Vector3(0, 0, 0);
         break;
     default:
         break;
@@ -144,7 +144,7 @@ void SetFace(Mesh *mesh, size_t i, Face face) {
     SetTriWithVertexOffset(mesh, triOffset + 1, vertexOffset, 3, 2, 0);
 }
 
-void MaybeAddFace(std::vector<Face>& faces, Vector3 pos, Vector3 negOffset, Direction dir, Block b1, Block b2) {
+void MaybeAddFace(std::vector<Face>& faces, rl::Vector3 pos, rl::Vector3 negOffset, Direction dir, Block b1, Block b2) {
     Block blockFace = GetBlockFace(b1, b2);
 
     if (IsBlock(b1) && !IsBlock(b2)) {
@@ -172,20 +172,20 @@ Model CreateModel(Chunk& chunk) {
             for(int y = 0; y < CHUNK_HEIGHT; y++) {
                 Block block = chunk.GetBlock(x, y, z);
 
-                Vector3 pos = { (float)x, (float)y, (float)z };
+                rl::Vector3 pos(x, y, z);
 
-                if (x == 0) MaybeAddFace(faces, pos, (Vector3){ -1, 0, 0 }, NX, block, AIR);
-                if (y == 0) MaybeAddFace(faces, pos, (Vector3){ 0, -1, 0 }, NY, block, AIR);
-                if (z == 0) MaybeAddFace(faces, pos, (Vector3){ 0, 0, -1 }, NZ, block, AIR);
+                if (x == 0) MaybeAddFace(faces, pos, rl::Vector3(-1, 0, 0), NX, block, AIR);
+                if (y == 0) MaybeAddFace(faces, pos, rl::Vector3(0, -1, 0), NY, block, AIR);
+                if (z == 0) MaybeAddFace(faces, pos, rl::Vector3(0, 0, -1), NZ, block, AIR);
 
                 Block px = (x != CHUNK_WIDTH - 1) ? chunk.GetBlock(x + 1, y, z) : AIR;
-                MaybeAddFace(faces, pos, (Vector3){ 1, 0, 0 }, PX, block, px);
+                MaybeAddFace(faces, pos, rl::Vector3(1, 0, 0), PX, block, px);
 
                 Block py = (y != CHUNK_HEIGHT - 1) ? chunk.GetBlock(x, y + 1, z) : AIR;
-                MaybeAddFace(faces, pos, (Vector3){ 0, 1, 0 }, PY, block, py);
+                MaybeAddFace(faces, pos, rl::Vector3(0, 1, 0), PY, block, py);
 
                 Block pz = (z != CHUNK_WIDTH - 1) ? chunk.GetBlock(x, y, z + 1) : AIR;
-                MaybeAddFace(faces, pos, (Vector3){ 0, 0, 1 }, PZ, block, pz);
+                MaybeAddFace(faces, pos, rl::Vector3(0, 0, 1), PZ, block, pz);
             }
 
     // This is fine on the stack,

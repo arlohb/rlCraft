@@ -1,14 +1,11 @@
 #include <iostream>
-#include <raylib.h>
-#include <raymath.h>
-#include <rlgl.h>
+
+#include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
 #include "3dText.h"
 #include "camera.h"
 #include "chunk.h"
 #include "mesh.h"
-
-#include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -21,11 +18,12 @@
 int main() {
     std::cout << RAYLIB_VERSION << std::endl;
 
-    InitWindow(WIDTH, HEIGHT, "RLCraft");
+    rl::Window window(WIDTH, HEIGHT, "RLCraft");
 
-    Texture worldTexture = LoadTexture("assets/Texture.png");
+    rl::Texture worldTexture("assets/Texture.png");
+    // Can't use class as *I think* Material unloads the shader itself.
     Shader worldShader = LoadShader("assets/world.vert", "assets/world.frag");
-    Material material = LoadMaterialDefault();
+    rl::Material material;
     material.maps[MATERIAL_MAP_DIFFUSE].texture = worldTexture;
     material.shader = worldShader;
 
@@ -36,7 +34,7 @@ int main() {
             for(int z = 0; z < CHUNKS_Z; z++) {
                 int i = z * CHUNKS_Z + x;
 
-                chunks[i].pos = (Vector2) { (float)x, (float)z };
+                chunks[i].pos = rl::Vector2(x, z);
                 chunks[i].Generate();
                 models[i] = CreateModel(chunks[i]);
                 models[i].materials[0] = material;
@@ -48,7 +46,7 @@ int main() {
 
     SetTargetFPS(60);
 
-    while (!WindowShouldClose()) {
+    while (!window.ShouldClose()) {
         camera.Update();
 
         BeginDrawing();
@@ -68,7 +66,7 @@ int main() {
                     for(int y = 0; y < HEIGHT; y++) {
                         float value = Remap(noise.GetNoise<float>(x, y), -1, 1, 0, 1);
                         unsigned char gray = (unsigned char)(value * 255.0);
-                        Color color = (Color){ gray, gray, gray, 255};
+                        Color color = rl::Color(gray, gray, gray, 255);
                         DrawPixel(x, y, color);
                     }
             } else {
@@ -76,21 +74,21 @@ int main() {
 
                     // Draw the axis and labels
                     float y = 10;
-                    DrawLine3D((Vector3){ 0, y, 0 }, (Vector3){ 10, y, 0 }, RED);
-                    DrawText3D(GetFontDefault(), "x", (Vector3){ 10, y, 0 }, 15, 0, 0, true, RED);
-                    DrawLine3D((Vector3){ 0, y, 0 }, (Vector3){ 0, y + 10, 0 }, GREEN);
-                    DrawText3D(GetFontDefault(), "y", (Vector3){ 0, y + 10, 0 }, 15, 0, 0, true, GREEN);
-                    DrawLine3D((Vector3){ 0, y, 0 }, (Vector3){ 0, y, 10 }, BLUE);
-                    DrawText3D(GetFontDefault(), "z", (Vector3){ 0, y, 10 }, 15, 0, 0, true, BLUE);
+                    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(10, y, 0), RED);
+                    DrawText3D(GetFontDefault(), "x", rl::Vector3(10, y, 0), 15, 0, 0, true, RED);
+                    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y + 10, 0), GREEN);
+                    DrawText3D(GetFontDefault(), "y", rl::Vector3(0, y + 10, 0), 15, 0, 0, true, GREEN);
+                    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y, 10), BLUE);
+                    DrawText3D(GetFontDefault(), "z", rl::Vector3(0, y, 10), 15, 0, 0, true, BLUE);
 
                     // Draw the world
                     for(int x = 0; x < CHUNKS_X; x++)
                         for(int z = 0; z < CHUNKS_Z; z++) {
-                            Vector3 pos = {
+                            rl::Vector3 pos(
                                 (float)(x * CHUNK_WIDTH - (int)(CHUNKS_X * CHUNK_WIDTH / 2)),
                                 0,
-                                (float)(z * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2)),
-                            };
+                                (float)(z * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2))
+                            );
                             DrawModel(models[z * CHUNKS_Z + x], pos, 1, WHITE);
                         }
 
@@ -104,9 +102,6 @@ int main() {
         for(int i = 0; i < CHUNKS_X * CHUNKS_Z; i++)
             // I can't use UnloadModel as that unloads the shared material.
             UnloadMesh(models[i].meshes[0]);
-    UnloadMaterial(material);
-
-    CloseWindow();
 
     return 0;
 }

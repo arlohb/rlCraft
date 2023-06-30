@@ -1,6 +1,6 @@
 #pragma once
 
-#include <raylib.h>
+#include "rl.h"
 
 enum Block {
     AIR,
@@ -9,7 +9,7 @@ enum Block {
     STONE,
 };
 
-Vector2 BlockTexCoords(Block block);
+rl::Vector2 BlockTexCoords(Block block);
 
 bool IsBlock(Block block);
 
@@ -24,5 +24,5 @@ enum Direction {
     NZ,
 };
 
-Vector3 DirectionVector(Direction dir);
+rl::Vector3 DirectionVector(Direction dir);
 

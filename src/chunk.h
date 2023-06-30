@@ -8,7 +8,7 @@
 
 class Chunk {
     public:
-        Vector2 pos;
+        rl::Vector2 pos;
 
         Chunk();
         Chunk(Vector2 _pos);
