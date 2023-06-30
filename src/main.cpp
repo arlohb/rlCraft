@@ -1,4 +1,6 @@
+#include <cstdint>
 #include <iostream>
+#include <unordered_map>
 
 #include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
@@ -27,17 +29,22 @@ int main() {
     material.maps[MATERIAL_MAP_DIFFUSE].texture = worldTexture;
     material.shader = worldShader;
 
-    Chunk chunks[CHUNKS_X * CHUNKS_Z];
-    Model models[CHUNKS_X * CHUNKS_Z];
+    std::unordered_map<rl::Vector2, Chunk> chunks;
+    std::unordered_map<rl::Vector2, Model> models;
+
     if(!DEBUG_NOISE)
         for(int x = 0; x < CHUNKS_X; x++)
             for(int z = 0; z < CHUNKS_Z; z++) {
-                int i = z * CHUNKS_Z + x;
+                rl::Vector2 v(x, z);
 
-                chunks[i].pos = rl::Vector2(x, z);
-                chunks[i].Generate();
-                models[i] = CreateModel(chunks[i]);
-                models[i].materials[0] = material;
+                Chunk chunk;
+                chunk.pos = rl::Vector2(x, z);
+                chunk.Generate();
+                chunks.insert(std::pair<rl::Vector2, Chunk>(v, chunk));
+
+                Model model = CreateModel(chunk);
+                model.materials[0] = material;
+                models.insert(std::pair<rl::Vector2, Model>(v, model));
             }
 
     MyCamera camera;
@@ -82,15 +89,14 @@ int main() {
                     DrawText3D(GetFontDefault(), "z", rl::Vector3(0, y, 10), 15, 0, 0, true, BLUE);
 
                     // Draw the world
-                    for(int x = 0; x < CHUNKS_X; x++)
-                        for(int z = 0; z < CHUNKS_Z; z++) {
-                            rl::Vector3 pos(
-                                (float)(x * CHUNK_WIDTH - (int)(CHUNKS_X * CHUNK_WIDTH / 2)),
-                                0,
-                                (float)(z * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2))
-                            );
-                            DrawModel(models[z * CHUNKS_Z + x], pos, 1, WHITE);
-                        }
+                    for (auto [v, model] : models) {
+                        rl::Vector3 pos(
+                            (float)(v.x * CHUNK_WIDTH - (int)(CHUNKS_X * CHUNK_WIDTH / 2)),
+                            0,
+                            (float)(v.y * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2))
+                        );
+                        DrawModel(models[v], pos, 1, WHITE);
+                    }
 
                 EndMode3D();
             }
@@ -99,9 +105,9 @@ int main() {
     }
 
     if (!DEBUG_NOISE)
-        for(int i = 0; i < CHUNKS_X * CHUNKS_Z; i++)
+        for (auto [_, model] : models)
             // I can't use UnloadModel as that unloads the shared material.
-            UnloadMesh(models[i].meshes[0]);
+            UnloadMesh(model.meshes[0]);
 
     return 0;
 }
