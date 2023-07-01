@@ -14,6 +14,7 @@ class World {
         ~World();
 
         void GenerateChunk(V2);
+        void InitialGeneration();
         void Draw();
 
     private:

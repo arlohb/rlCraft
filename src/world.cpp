@@ -1,5 +1,6 @@
 #include "world.h"
 
+#include <chrono>
 #include <iostream>
 #include "mesh.h"
 
@@ -25,6 +26,38 @@ void World::GenerateChunk(V2 v) {
     Model model = CreateModel(chunk);
     model.materials[0] = worldMat;
     models.insert(std::pair<V2, Model>(v, model));
+}
+
+void World::InitialGeneration() {
+    auto start = std::chrono::system_clock::now();
+
+    int i = 0;
+    const int max = CHUNKS_X * CHUNKS_Z;
+    const int width = 80;
+
+    for(i32 x = 0; x < CHUNKS_X; x++)
+        for(i32 z = 0; z < CHUNKS_Z; z++) {
+            i += 1;
+            int percent = width * i / max;
+
+            std::cout << "\r[";
+
+            for(int j = 0; j < width; j++)
+                if (j == percent)
+                    std::cout << ">";
+                else if (j < percent)
+                    std::cout << "=";
+                else
+                    std::cout << " ";
+
+            std::cout << "] - " << percent << "%" << std::flush;
+
+            GenerateChunk(V2(x, z));
+        }
+
+    auto end = std::chrono::system_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::printf("\nChunk gen took %ld ms\n", ms);
 }
 
 void World::Draw() {

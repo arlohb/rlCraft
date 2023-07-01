@@ -21,15 +21,14 @@ auto DrawGrid() {
 }
 
 i32 main() {
+    SetTraceLogLevel(TraceLogLevel::LOG_ERROR);
     rl::Window window(WIDTH, HEIGHT, "RLCraft");
 
     MyCamera camera;
     World world;
 
     if(!DEBUG_NOISE)
-        for(i32 x = 0; x < CHUNKS_X; x++)
-            for(i32 z = 0; z < CHUNKS_Z; z++)
-                world.GenerateChunk(V2(x, z));
+        world.InitialGeneration();
 
     DisableCursor();
     window.SetTargetFPS(60);
