@@ -94,44 +94,45 @@ void SetFace(Mesh *mesh, size_t i, Face face) {
     rl::Vector3 o1, o2, o3, o4;
 
     switch (face.dir) {
-    case Dir::Px:
-        o1 = rl::Vector3(1, 0, 1);
-        o2 = rl::Vector3(1, 1, 1);
-        o3 = rl::Vector3(1, 1, 0);
-        o4 = rl::Vector3(1, 0, 0);
-        break;
-    case Dir::Nx:
-        o1 = rl::Vector3(0, 0, 0);
-        o2 = rl::Vector3(0, 1, 0);
-        o3 = rl::Vector3(0, 1, 1);
-        o4 = rl::Vector3(0, 0, 1);
-        break;
-    case Dir::Py:
-        o1 = rl::Vector3(0, 1, 0);
-        o2 = rl::Vector3(1, 1, 0);
-        o3 = rl::Vector3(1, 1, 1);
-        o4 = rl::Vector3(0, 1, 1);
-        break;
-    case Dir::Ny:
-        o1 = rl::Vector3(0, 0, 0);
-        o2 = rl::Vector3(0, 0, 1);
-        o3 = rl::Vector3(1, 0, 1);
-        o4 = rl::Vector3(1, 0, 0);
-        break;
-    case Dir::Pz:
-        o1 = rl::Vector3(0, 0, 1);
-        o2 = rl::Vector3(0, 1, 1);
-        o3 = rl::Vector3(1, 1, 1);
-        o4 = rl::Vector3(1, 0, 1);
-        break;
-    case Dir::Nz:
-        o1 = rl::Vector3(1, 0, 0);
-        o2 = rl::Vector3(1, 1, 0);
-        o3 = rl::Vector3(0, 1, 0);
-        o4 = rl::Vector3(0, 0, 0);
-        break;
-    default:
-        break;
+        using enum Dir;
+        case Px:
+            o1 = rl::Vector3(1, 0, 1);
+            o2 = rl::Vector3(1, 1, 1);
+            o3 = rl::Vector3(1, 1, 0);
+            o4 = rl::Vector3(1, 0, 0);
+            break;
+        case Nx:
+            o1 = rl::Vector3(0, 0, 0);
+            o2 = rl::Vector3(0, 1, 0);
+            o3 = rl::Vector3(0, 1, 1);
+            o4 = rl::Vector3(0, 0, 1);
+            break;
+        case Py:
+            o1 = rl::Vector3(0, 1, 0);
+            o2 = rl::Vector3(1, 1, 0);
+            o3 = rl::Vector3(1, 1, 1);
+            o4 = rl::Vector3(0, 1, 1);
+            break;
+        case Ny:
+            o1 = rl::Vector3(0, 0, 0);
+            o2 = rl::Vector3(0, 0, 1);
+            o3 = rl::Vector3(1, 0, 1);
+            o4 = rl::Vector3(1, 0, 0);
+            break;
+        case Pz:
+            o1 = rl::Vector3(0, 0, 1);
+            o2 = rl::Vector3(0, 1, 1);
+            o3 = rl::Vector3(1, 1, 1);
+            o4 = rl::Vector3(1, 0, 1);
+            break;
+        case Nz:
+            o1 = rl::Vector3(1, 0, 0);
+            o2 = rl::Vector3(1, 1, 0);
+            o3 = rl::Vector3(0, 1, 0);
+            o4 = rl::Vector3(0, 0, 0);
+            break;
+        default:
+            break;
     }
 
     SetVertex(mesh, vertexOffset    , face, o1);

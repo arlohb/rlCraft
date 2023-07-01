@@ -4,16 +4,17 @@ rl::Vector2 BlockTexCoords(Block block) {
     rl::Vector2 pos;
 
     switch (block) {
-        case Block::Air:
+        using enum Block;
+        case Air:
             pos = rl::Vector2(0, 0);
             break;
-        case Block::Grass:
+        case Grass:
             pos = rl::Vector2(1, 0);
             break;
-        case Block::Dirt:
+        case Dirt:
             pos = rl::Vector2(2, 0);
             break;
-        case Block::Stone:
+        case Stone:
             pos = rl::Vector2(3, 0);
             break;
     }
@@ -23,18 +24,19 @@ rl::Vector2 BlockTexCoords(Block block) {
 
 rl::Vector3 DirVector(Dir dir) {
     switch (dir) {
-    case Dir::Px:
-        return rl::Vector3(1, 0, 0);
-    case Dir::Nx:
-        return rl::Vector3(-1, 0, 0);
-    case Dir::Py:
-        return rl::Vector3(0, 1, 0);
-    case Dir::Ny:
-        return rl::Vector3(0, -1, 0);
-    case Dir::Pz:
-        return rl::Vector3(0, 0, 1);
-    case Dir::Nz:
-        return rl::Vector3(0, 0, -1);
+        using enum Dir;
+        case Px:
+            return rl::Vector3(1, 0, 0);
+        case Nx:
+            return rl::Vector3(-1, 0, 0);
+        case Py:
+            return rl::Vector3(0, 1, 0);
+        case Ny:
+            return rl::Vector3(0, -1, 0);
+        case Pz:
+            return rl::Vector3(0, 0, 1);
+        case Nz:
+            return rl::Vector3(0, 0, -1);
     }
 }
 
