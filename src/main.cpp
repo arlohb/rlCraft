@@ -8,12 +8,10 @@
 #include "camera.h"
 #include "chunk.h"
 #include "mesh.h"
+#include "world.h"
 
 #define WIDTH 800
 #define HEIGHT 600
-
-#define CHUNKS_X 16
-#define CHUNKS_Z 16
 
 #define DEBUG_NOISE false
 
@@ -22,30 +20,12 @@ int main() {
 
     rl::Window window(WIDTH, HEIGHT, "RLCraft");
 
-    rl::Texture worldTexture("assets/Texture.png");
-    // Can't use class as *I think* Material unloads the shader itself.
-    Shader worldShader = LoadShader("assets/world.vert", "assets/world.frag");
-    rl::Material material;
-    material.maps[MATERIAL_MAP_DIFFUSE].texture = worldTexture;
-    material.shader = worldShader;
-
-    std::unordered_map<rl::Vector2, Chunk> chunks;
-    std::unordered_map<rl::Vector2, Model> models;
+    World world;
 
     if(!DEBUG_NOISE)
         for(int x = 0; x < CHUNKS_X; x++)
-            for(int z = 0; z < CHUNKS_Z; z++) {
-                rl::Vector2 v(x, z);
-
-                Chunk chunk;
-                chunk.pos = rl::Vector2(x, z);
-                chunk.Generate();
-                chunks.insert(std::pair<rl::Vector2, Chunk>(v, chunk));
-
-                Model model = CreateModel(chunk);
-                model.materials[0] = material;
-                models.insert(std::pair<rl::Vector2, Model>(v, model));
-            }
+            for(int z = 0; z < CHUNKS_Z; z++)
+                world.GenerateChunk(rl::Vector2(x, z));
 
     MyCamera camera;
 
@@ -88,26 +68,13 @@ int main() {
                     DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y, 10), BLUE);
                     DrawText3D(GetFontDefault(), "z", rl::Vector3(0, y, 10), 15, 0, 0, true, BLUE);
 
-                    // Draw the world
-                    for (auto [v, model] : models) {
-                        rl::Vector3 pos(
-                            (float)(v.x * CHUNK_WIDTH - (int)(CHUNKS_X * CHUNK_WIDTH / 2)),
-                            0,
-                            (float)(v.y * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2))
-                        );
-                        DrawModel(models[v], pos, 1, WHITE);
-                    }
+                    world.Draw();
 
                 EndMode3D();
             }
 
         EndDrawing();
     }
-
-    if (!DEBUG_NOISE)
-        for (auto [_, model] : models)
-            // I can't use UnloadModel as that unloads the shared material.
-            UnloadMesh(model.meshes[0]);
 
     return 0;
 }
