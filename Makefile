@@ -11,6 +11,9 @@ lint:
 	clang-tidy $(source_files)
 	clang-check $(source_files)
 
+compiledb:
+	bear -- make
+
 clean:
 	rm -f $(out)
 

@@ -9,6 +9,7 @@
       buildInputs = with pkgs; [
         clang-tools
         clang
+        bear
 
         # I copied the files from nixpkgs
         # and updated it myself.
