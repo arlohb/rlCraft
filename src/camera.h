@@ -1,16 +1,16 @@
 #pragma once
 
-#include "rl.h"
+#include "types.h"
 
 class MyCamera {
     public:
         Camera3D camera;
-        rl::Vector3 forward;
-        rl::Vector3 up;
+        V3 forward;
+        V3 up;
 
-        float mouseSensitivity;
-        float moveSpeed;
-        float shiftMod;
+        f32 mouseSensitivity;
+        f32 moveSpeed;
+        f32 shiftMod;
 
         MyCamera();
         void Update();

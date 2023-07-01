@@ -1,38 +1,35 @@
 #include <iostream>
 
-
 #include "3dText.h"
 #include "camera.h"
-#include "chunk.h"
-#include "mesh.h"
 #include "world.h"
 #include "noise.h"
 
-const int WIDTH = 800;
-const int HEIGHT = 600;
+const i32 WIDTH = 800;
+const i32 HEIGHT = 600;
 
 const bool DEBUG_NOISE = false;
 
 auto DrawGrid() {
-    float y = 10;
-    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(10, y, 0), RED);
-    DrawText3D(GetFontDefault(), "x", rl::Vector3(10, y, 0), 15, 0, 0, true, RED);
-    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y + 10, 0), GREEN);
-    DrawText3D(GetFontDefault(), "y", rl::Vector3(0, y + 10, 0), 15, 0, 0, true, GREEN);
-    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y, 10), BLUE);
-    DrawText3D(GetFontDefault(), "z", rl::Vector3(0, y, 10), 15, 0, 0, true, BLUE);
+    f32 y = 10;
+    DrawLine3D(V3(0, y, 0), V3(10, y, 0), RED);
+    DrawText3D(GetFontDefault(), "x", V3(10, y, 0), 15, 0, 0, true, RED);
+    DrawLine3D(V3(0, y, 0), V3(0, y + 10, 0), GREEN);
+    DrawText3D(GetFontDefault(), "y", V3(0, y + 10, 0), 15, 0, 0, true, GREEN);
+    DrawLine3D(V3(0, y, 0), V3(0, y, 10), BLUE);
+    DrawText3D(GetFontDefault(), "z", V3(0, y, 10), 15, 0, 0, true, BLUE);
 }
 
-int main() {
+i32 main() {
     rl::Window window(WIDTH, HEIGHT, "RLCraft");
 
     MyCamera camera;
     World world;
 
     if(!DEBUG_NOISE)
-        for(int x = 0; x < CHUNKS_X; x++)
-            for(int z = 0; z < CHUNKS_Z; z++)
-                world.GenerateChunk(rl::Vector2(x, z));
+        for(i32 x = 0; x < CHUNKS_X; x++)
+            for(i32 z = 0; z < CHUNKS_Z; z++)
+                world.GenerateChunk(V2(x, z));
 
     DisableCursor();
     window.SetTargetFPS(60);
@@ -52,10 +49,10 @@ int main() {
                 noise.SetFractalGain(0.6);
                 noise.SetFrequency(0.0025);
 
-                for(int x = 0; x < WIDTH; x++)
-                    for(int y = 0; y < HEIGHT; y++) {
-                        float value = Remap(noise.GetNoise<float>(x, y), -1, 1, 0, 1);
-                        unsigned char gray = (unsigned char)(value * 255.0);
+                for(i32 x = 0; x < WIDTH; x++)
+                    for(i32 y = 0; y < HEIGHT; y++) {
+                        f32 value = Remap(noise.GetNoise<f32>(x, y), -1, 1, 0, 1);
+                        u8 gray = (u8)(value * 255.0);
                         Color color = rl::Color(gray, gray, gray, 255);
                         DrawPixel(x, y, color);
                     }

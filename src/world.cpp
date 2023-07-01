@@ -1,7 +1,7 @@
 #include "world.h"
 
-#include "mesh.h"
 #include <iostream>
+#include "mesh.h"
 
 World::World() {
     worldTex = rl::Texture("assets/Texture.png");
@@ -16,23 +16,23 @@ World::~World() {
         UnloadMesh(model.meshes[0]);
 }
 
-void World::GenerateChunk(rl::Vector2 v) {
+void World::GenerateChunk(V2 v) {
     Chunk chunk;
     chunk.pos = v;
     chunk.Generate();
-    chunks.insert(std::pair<rl::Vector2, Chunk>(v, chunk));
+    chunks.insert(std::pair<V2, Chunk>(v, chunk));
 
     Model model = CreateModel(chunk);
     model.materials[0] = worldMat;
-    models.insert(std::pair<rl::Vector2, Model>(v, model));
+    models.insert(std::pair<V2, Model>(v, model));
 }
 
 void World::Draw() {
     for (auto [v, model] : models) {
-        rl::Vector3 pos(
-            (float)(v.x * CHUNK_WIDTH - (int)(CHUNKS_X * CHUNK_WIDTH / 2)),
+        V3 pos(
+            (f32)(v.x * CHUNK_WIDTH - (i32)(CHUNKS_X * CHUNK_WIDTH / 2)),
             0,
-            (float)(v.y * CHUNK_WIDTH - (int)(CHUNKS_Z * CHUNK_WIDTH / 2))
+            (f32)(v.y * CHUNK_WIDTH - (i32)(CHUNKS_Z * CHUNK_WIDTH / 2))
         );
         DrawModel(models[v], pos, 1, WHITE);
     }

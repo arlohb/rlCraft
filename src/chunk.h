@@ -2,19 +2,19 @@
 
 #include "block.h"
 
-const int CHUNK_WIDTH = 16;
-const int CHUNK_HEIGHT = 255;
-const int CHUNK_SIZE = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
+const i32 CHUNK_WIDTH = 16;
+const i32 CHUNK_HEIGHT = 255;
+const i32 CHUNK_SIZE = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
 
 class Chunk {
     public:
-        rl::Vector2 pos;
+        V2 pos;
 
         Chunk();
         Chunk(Vector2 _pos);
 
-        Block GetBlock(int x, int y, int z);
-        void SetBlock(int x, int y, int z, Block block);
+        Block GetBlock(i32 x, i32 y, i32 z);
+        void SetBlock(i32 x, i32 y, i32 z, Block block);
 
         void Generate();
 

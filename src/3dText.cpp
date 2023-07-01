@@ -1,41 +1,40 @@
-#include <raylib.h>
-#include <rlgl.h>
-
 #include "3dText.h"
 
-void DrawTextCodepoint3D(Font font, int codepoint, Vector3 position, float fontSize, bool backface, Color tint) {
+#include <rlgl.h>
+
+void DrawTextCodepoint3D(Font font, i32 codepoint, V3 position, f32 fontSize, bool backface, Color tint) {
     // Character index position in sprite font
     // NOTE: In case a codepoint is not available in the font, index returned points to '?'
-    int index = GetGlyphIndex(font, codepoint);
-    float scale = fontSize / (float)font.baseSize;
+    i32 index = GetGlyphIndex(font, codepoint);
+    f32 scale = fontSize / (f32)font.baseSize;
 
     // Character destination rectangle on screen
     // NOTE: We consider charsPadding on drawing
-    position.x += (float)(font.glyphs[index].offsetX - font.glyphPadding) / (float)font.baseSize * scale;
-    position.z += (float)(font.glyphs[index].offsetY - font.glyphPadding) / (float)font.baseSize * scale;
+    position.x += (f32)(font.glyphs[index].offsetX - font.glyphPadding) / (f32)font.baseSize * scale;
+    position.z += (f32)(font.glyphs[index].offsetY - font.glyphPadding) / (f32)font.baseSize * scale;
 
     // Character source rectangle from font texture atlas
     // NOTE: We consider chars padding when drawing, it could be required for outline/glow shader effects
     Rectangle srcRec = {
-        font.recs[index].x - (float)font.glyphPadding,
-        font.recs[index].y - (float)font.glyphPadding,
+        font.recs[index].x - (f32)font.glyphPadding,
+        font.recs[index].y - (f32)font.glyphPadding,
         font.recs[index].width + 2.0f * font.glyphPadding,
         font.recs[index].height + 2.0f * font.glyphPadding
     };
 
-    float width = (float)(font.recs[index].width + 2.0f * font.glyphPadding) / (float)font.baseSize * scale;
-    float height = (float)(font.recs[index].height + 2.0f * font.glyphPadding) / (float)font.baseSize * scale;
+    f32 width = (f32)(font.recs[index].width + 2.0f * font.glyphPadding) / (f32)font.baseSize * scale;
+    f32 height = (f32)(font.recs[index].height + 2.0f * font.glyphPadding) / (f32)font.baseSize * scale;
 
     if (font.texture.id > 0) {
-        const float x = 0.0f;
-        const float y = 0.0f;
-        const float z = 0.0f;
+        const f32 x = 0.0f;
+        const f32 y = 0.0f;
+        const f32 z = 0.0f;
 
         // normalized texture coordinates of the glyph inside the font texture (0.0f -> 1.0f)
-        const float tx = srcRec.x / font.texture.width;
-        const float ty = srcRec.y / font.texture.height;
-        const float tw = (srcRec.x + srcRec.width) / font.texture.width;
-        const float th = (srcRec.y + srcRec.height) / font.texture.height;
+        const f32 tx = srcRec.x / font.texture.width;
+        const f32 ty = srcRec.y / font.texture.height;
+        const f32 tw = (srcRec.x + srcRec.width) / font.texture.width;
+        const f32 th = (srcRec.y + srcRec.height) / font.texture.height;
 
         rlCheckRenderBatchLimit(4 + 4 * backface);
         rlSetTexture(font.texture.id);
@@ -68,20 +67,20 @@ void DrawTextCodepoint3D(Font font, int codepoint, Vector3 position, float fontS
     }
 }
 
-void DrawText3D(Font font, const char *text, Vector3 position, float fontSize, float fontSpacing, float lineSpacing, bool backface, Color tint) {
-    int length = TextLength(text);          // Total length in bytes of the text, scanned by codepoints in loop
+void DrawText3D(Font font, const char *text, V3 position, f32 fontSize, f32 fontSpacing, f32 lineSpacing, bool backface, Color tint) {
+    i32 length = TextLength(text);          // Total length in bytes of the text, scanned by codepoints in loop
 
-    float textOffsetY = 0.0f;               // Offset between lines (on line break '\n')
-    float textOffsetX = 0.0f;               // Offset X to next character to draw
+    f32 textOffsetY = 0.0f;               // Offset between lines (on line break '\n')
+    f32 textOffsetX = 0.0f;               // Offset X to next character to draw
 
-    float scale = fontSize / (float)font.baseSize;
+    f32 scale = fontSize / (f32)font.baseSize;
 
-    for (int i = 0; i < length;)
+    for (i32 i = 0; i < length;)
     {
         // Get next codepoint from byte string and glyph index in font
-        int codepointByteCount = 0;
-        int codepoint = GetCodepoint(&text[i], &codepointByteCount);
-        int index = GetGlyphIndex(font, codepoint);
+        i32 codepointByteCount = 0;
+        i32 codepoint = GetCodepoint(&text[i], &codepointByteCount);
+        i32 index = GetGlyphIndex(font, codepoint);
 
         // NOTE: Normally we exit the decoding sequence as soon as a bad byte is found (and return 0x3f)
         // but we need to draw all of the bad bytes using the '?' symbol moving one byte
@@ -91,18 +90,18 @@ void DrawText3D(Font font, const char *text, Vector3 position, float fontSize, f
         {
             // NOTE: Fixed line spacing of 1.5 line-height
             // TODO: Support custom line spacing defined by user
-            textOffsetY += scale + lineSpacing / (float)font.baseSize * scale;
+            textOffsetY += scale + lineSpacing / (f32)font.baseSize * scale;
             textOffsetX = 0.0f;
         }
         else
         {
             if ((codepoint != ' ') && (codepoint != '\t'))
             {
-                DrawTextCodepoint3D(font, codepoint, (Vector3){ position.x + textOffsetX, position.y, position.z + textOffsetY }, fontSize, backface, tint);
+                DrawTextCodepoint3D(font, codepoint, (V3){ position.x + textOffsetX, position.y, position.z + textOffsetY }, fontSize, backface, tint);
             }
 
-            if (font.glyphs[index].advanceX == 0) textOffsetX += (float)(font.recs[index].width + fontSpacing) / (float)font.baseSize * scale;
-            else textOffsetX += (float)(font.glyphs[index].advanceX + fontSpacing) / (float)font.baseSize * scale;
+            if (font.glyphs[index].advanceX == 0) textOffsetX += (f32)(font.recs[index].width + fontSpacing) / (f32)font.baseSize * scale;
+            else textOffsetX += (f32)(font.glyphs[index].advanceX + fontSpacing) / (f32)font.baseSize * scale;
         }
 
         i += codepointByteCount;   // Move text bytes counter to next codepoint

@@ -4,17 +4,16 @@
 #include <memory>
 
 #include "chunk.h"
-#include "rl.h"
 
-const int CHUNKS_X = 16;
-const int CHUNKS_Z = 16;
+const i32 CHUNKS_X = 16;
+const i32 CHUNKS_Z = 16;
 
 class World {
     public:
         World();
         ~World();
 
-        void GenerateChunk(rl::Vector2);
+        void GenerateChunk(V2);
         void Draw();
 
     private:
@@ -23,7 +22,7 @@ class World {
         Shader worldShader;
         rl::Material worldMat;
 
-        std::unordered_map<rl::Vector2, Chunk> chunks;
-        std::unordered_map<rl::Vector2, Model> models;
+        std::unordered_map<V2, Chunk> chunks;
+        std::unordered_map<V2, Model> models;
 };
 

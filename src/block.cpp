@@ -1,42 +1,42 @@
 #include "block.h"
 
-rl::Vector2 BlockTexCoords(Block block) {
-    rl::Vector2 pos;
+V2 BlockTexCoords(Block block) {
+    V2 pos;
 
     switch (block) {
         using enum Block;
         case Air:
-            pos = rl::Vector2(0, 0);
+            pos = V2(0, 0);
             break;
         case Grass:
-            pos = rl::Vector2(1, 0);
+            pos = V2(1, 0);
             break;
         case Dirt:
-            pos = rl::Vector2(2, 0);
+            pos = V2(2, 0);
             break;
         case Stone:
-            pos = rl::Vector2(3, 0);
+            pos = V2(3, 0);
             break;
     }
 
     return pos / 16.0;
 }
 
-rl::Vector3 DirVector(Dir dir) {
+V3 DirVector(Dir dir) {
     switch (dir) {
         using enum Dir;
         case Px:
-            return rl::Vector3(1, 0, 0);
+            return V3(1, 0, 0);
         case Nx:
-            return rl::Vector3(-1, 0, 0);
+            return V3(-1, 0, 0);
         case Py:
-            return rl::Vector3(0, 1, 0);
+            return V3(0, 1, 0);
         case Ny:
-            return rl::Vector3(0, -1, 0);
+            return V3(0, -1, 0);
         case Pz:
-            return rl::Vector3(0, 0, 1);
+            return V3(0, 0, 1);
         case Nz:
-            return rl::Vector3(0, 0, -1);
+            return V3(0, 0, -1);
     }
 }
 

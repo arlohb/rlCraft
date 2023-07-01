@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rl.h"
+#include "types.h"
 
 enum class Block {
     Air,
@@ -9,7 +9,7 @@ enum class Block {
     Stone,
 };
 
-rl::Vector2 BlockTexCoords(Block block);
+V2 BlockTexCoords(Block block);
 
 bool IsBlock(Block block);
 
@@ -24,5 +24,5 @@ enum class Dir {
     Nz,
 };
 
-rl::Vector3 DirVector(Dir dir);
+V3 DirVector(Dir dir);
 
