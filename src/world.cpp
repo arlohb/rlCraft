@@ -20,7 +20,7 @@ World::~World() {
 void World::GenerateChunk(V2 v) {
     Chunk chunk;
     chunk.pos = v;
-    chunk.Generate();
+    chunk.Generate(noise);
     chunks.insert(std::pair<V2, Chunk>(v, chunk));
 
     Model model = CreateModel(chunk);

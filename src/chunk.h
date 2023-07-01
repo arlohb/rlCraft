@@ -1,6 +1,7 @@
 #pragma once
 
 #include "block.h"
+#include "noise.h"
 
 const i32 CHUNK_WIDTH = 16;
 const i32 CHUNK_HEIGHT = 255;
@@ -16,7 +17,7 @@ class Chunk {
         Block GetBlock(i32 x, i32 y, i32 z);
         void SetBlock(i32 x, i32 y, i32 z, Block block);
 
-        void Generate();
+        void Generate(Noise& noise);
 
     private:
         Block* blocks;

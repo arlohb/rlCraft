@@ -23,6 +23,8 @@ class World {
         Shader worldShader;
         rl::Material worldMat;
 
+        Noise noise;
+
         std::unordered_map<V2, Chunk> chunks;
         std::unordered_map<V2, Model> models;
 };
