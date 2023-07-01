@@ -8,7 +8,7 @@
 
 struct Face {
     rl::Vector3 pos;
-    Direction dir;
+    Dir dir;
     rl::Vector2 texCoords;
 };
 
@@ -38,7 +38,7 @@ void SetVertex(Mesh *mesh, size_t i, Face face, rl::Vector3 offset) {
     mesh->vertices[i * 3 + 1] = pos.y;
     mesh->vertices[i * 3 + 2] = pos.z;
 
-    rl::Vector3 normal = DirectionVector(face.dir);
+    rl::Vector3 normal = DirVector(face.dir);
 
     mesh->normals[i * 3    ] = normal.x;
     mesh->normals[i * 3 + 1] = normal.y;
@@ -94,37 +94,37 @@ void SetFace(Mesh *mesh, size_t i, Face face) {
     rl::Vector3 o1, o2, o3, o4;
 
     switch (face.dir) {
-    case PX:
+    case Dir::Px:
         o1 = rl::Vector3(1, 0, 1);
         o2 = rl::Vector3(1, 1, 1);
         o3 = rl::Vector3(1, 1, 0);
         o4 = rl::Vector3(1, 0, 0);
         break;
-    case NX:
+    case Dir::Nx:
         o1 = rl::Vector3(0, 0, 0);
         o2 = rl::Vector3(0, 1, 0);
         o3 = rl::Vector3(0, 1, 1);
         o4 = rl::Vector3(0, 0, 1);
         break;
-    case PY:
+    case Dir::Py:
         o1 = rl::Vector3(0, 1, 0);
         o2 = rl::Vector3(1, 1, 0);
         o3 = rl::Vector3(1, 1, 1);
         o4 = rl::Vector3(0, 1, 1);
         break;
-    case NY:
+    case Dir::Ny:
         o1 = rl::Vector3(0, 0, 0);
         o2 = rl::Vector3(0, 0, 1);
         o3 = rl::Vector3(1, 0, 1);
         o4 = rl::Vector3(1, 0, 0);
         break;
-    case PZ:
+    case Dir::Pz:
         o1 = rl::Vector3(0, 0, 1);
         o2 = rl::Vector3(0, 1, 1);
         o3 = rl::Vector3(1, 1, 1);
         o4 = rl::Vector3(1, 0, 1);
         break;
-    case NZ:
+    case Dir::Nz:
         o1 = rl::Vector3(1, 0, 0);
         o2 = rl::Vector3(1, 1, 0);
         o3 = rl::Vector3(0, 1, 0);
@@ -144,7 +144,7 @@ void SetFace(Mesh *mesh, size_t i, Face face) {
     SetTriWithVertexOffset(mesh, triOffset + 1, vertexOffset, 3, 2, 0);
 }
 
-void MaybeAddFace(std::vector<Face>& faces, rl::Vector3 pos, rl::Vector3 negOffset, Direction dir, Block b1, Block b2) {
+void MaybeAddFace(std::vector<Face>& faces, rl::Vector3 pos, rl::Vector3 negOffset, Dir dir, Block b1, Block b2) {
     Block blockFace = GetBlockFace(b1, b2);
 
     if (IsBlock(b1) && !IsBlock(b2)) {
@@ -158,7 +158,7 @@ void MaybeAddFace(std::vector<Face>& faces, rl::Vector3 pos, rl::Vector3 negOffs
     if (!IsBlock(b1) && IsBlock(b2)) {
         Face face;
         face.pos = Vector3Add(pos, negOffset);
-        face.dir = (Direction)((int)dir + 1);
+        face.dir = (Dir)((int)dir + 1);
         face.texCoords = BlockTexCoords(blockFace);
         faces.push_back(face);
     }
@@ -174,18 +174,18 @@ Model CreateModel(Chunk& chunk) {
 
                 rl::Vector3 pos(x, y, z);
 
-                if (x == 0) MaybeAddFace(faces, pos, rl::Vector3(-1, 0, 0), NX, block, AIR);
-                if (y == 0) MaybeAddFace(faces, pos, rl::Vector3(0, -1, 0), NY, block, AIR);
-                if (z == 0) MaybeAddFace(faces, pos, rl::Vector3(0, 0, -1), NZ, block, AIR);
+                if (x == 0) MaybeAddFace(faces, pos, rl::Vector3(-1, 0, 0), Dir::Nx, block, Block::Air);
+                if (y == 0) MaybeAddFace(faces, pos, rl::Vector3(0, -1, 0), Dir::Ny, block, Block::Air);
+                if (z == 0) MaybeAddFace(faces, pos, rl::Vector3(0, 0, -1), Dir::Nz, block, Block::Air);
 
-                Block px = (x != CHUNK_WIDTH - 1) ? chunk.GetBlock(x + 1, y, z) : AIR;
-                MaybeAddFace(faces, pos, rl::Vector3(1, 0, 0), PX, block, px);
+                Block px = (x != CHUNK_WIDTH - 1) ? chunk.GetBlock(x + 1, y, z) : Block::Air;
+                MaybeAddFace(faces, pos, rl::Vector3(1, 0, 0), Dir::Px, block, px);
 
-                Block py = (y != CHUNK_HEIGHT - 1) ? chunk.GetBlock(x, y + 1, z) : AIR;
-                MaybeAddFace(faces, pos, rl::Vector3(0, 1, 0), PY, block, py);
+                Block py = (y != CHUNK_HEIGHT - 1) ? chunk.GetBlock(x, y + 1, z) : Block::Air;
+                MaybeAddFace(faces, pos, rl::Vector3(0, 1, 0), Dir::Py, block, py);
 
-                Block pz = (z != CHUNK_WIDTH - 1) ? chunk.GetBlock(x, y, z + 1) : AIR;
-                MaybeAddFace(faces, pos, rl::Vector3(0, 0, 1), PZ, block, pz);
+                Block pz = (z != CHUNK_WIDTH - 1) ? chunk.GetBlock(x, y, z + 1) : Block::Air;
+                MaybeAddFace(faces, pos, rl::Vector3(0, 0, 1), Dir::Pz, block, pz);
             }
 
     // This is fine on the stack,

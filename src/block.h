@@ -2,11 +2,11 @@
 
 #include "rl.h"
 
-enum Block {
-    AIR,
-    GRASS,
-    DIRT,
-    STONE,
+enum class Block {
+    Air,
+    Grass,
+    Dirt,
+    Stone,
 };
 
 rl::Vector2 BlockTexCoords(Block block);
@@ -15,14 +15,14 @@ bool IsBlock(Block block);
 
 Block GetBlockFace(Block b1, Block b2);
 
-enum Direction {
-    PX,
-    NX,
-    PY,
-    NY,
-    PZ,
-    NZ,
+enum class Dir {
+    Px,
+    Nx,
+    Py,
+    Ny,
+    Pz,
+    Nz,
 };
 
-rl::Vector3 DirectionVector(Direction dir);
+rl::Vector3 DirVector(Dir dir);
 

@@ -38,11 +38,11 @@ Block GenBlock(Noise& noise, float depth, float squashing, int x, int y, int z) 
     Block block;
 
     if (density < depth) {
-        block = AIR;
+        block = Block::Air;
     } else if (y == density) {
-        block = DIRT;
+        block = Block::Dirt;
     } else {
-        block = STONE;
+        block = Block::Stone;
     }
 
     return block;
@@ -118,8 +118,8 @@ void Chunk::Generate() {
                     break;
                 }
 
-                if (GetBlock(cx, y, cz) == STONE) {
-                    SetBlock(cx, y, cz, count ? DIRT : GRASS);
+                if (GetBlock(cx, y, cz) == Block::Stone) {
+                    SetBlock(cx, y, cz, count ? Block::Dirt : Block::Grass);
                     count++;
                 }
             }
@@ -127,7 +127,7 @@ void Chunk::Generate() {
             for(int y = 0; y < CHUNK_HEIGHT; y++) {
                 bool cave = RemoveCaves(noise, x, y, z);
 
-                if (cave) SetBlock(cx, y, cz, AIR);
+                if (cave) SetBlock(cx, y, cz, Block::Air);
             }
         }
 }

@@ -4,16 +4,16 @@ rl::Vector2 BlockTexCoords(Block block) {
     rl::Vector2 pos;
 
     switch (block) {
-        case AIR:
+        case Block::Air:
             pos = rl::Vector2(0, 0);
             break;
-        case GRASS:
+        case Block::Grass:
             pos = rl::Vector2(1, 0);
             break;
-        case DIRT:
+        case Block::Dirt:
             pos = rl::Vector2(2, 0);
             break;
-        case STONE:
+        case Block::Stone:
             pos = rl::Vector2(3, 0);
             break;
     }
@@ -21,24 +21,24 @@ rl::Vector2 BlockTexCoords(Block block) {
     return pos / 16.0;
 }
 
-rl::Vector3 DirectionVector(Direction dir) {
+rl::Vector3 DirVector(Dir dir) {
     switch (dir) {
-    case PX:
+    case Dir::Px:
         return rl::Vector3(1, 0, 0);
-    case NX:
+    case Dir::Nx:
         return rl::Vector3(-1, 0, 0);
-    case PY:
+    case Dir::Py:
         return rl::Vector3(0, 1, 0);
-    case NY:
+    case Dir::Ny:
         return rl::Vector3(0, -1, 0);
-    case PZ:
+    case Dir::Pz:
         return rl::Vector3(0, 0, 1);
-    case NZ:
+    case Dir::Nz:
         return rl::Vector3(0, 0, -1);
     }
 }
 
-bool IsBlock(Block block) { return block > 0; }
+bool IsBlock(Block block) { return block != Block::Air; }
 
 Block GetBlockFace(Block b1, Block b2) {
     if (IsBlock(b1) && !IsBlock(b2)) {
@@ -47,6 +47,6 @@ Block GetBlockFace(Block b1, Block b2) {
     if (!IsBlock(b1) && IsBlock(b2)) {
         return b2;
     }
-    return AIR;
+    return Block::Air;
 }
 
