@@ -1,6 +1,4 @@
-#include <cstdint>
 #include <iostream>
-#include <unordered_map>
 
 #include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
@@ -15,11 +13,20 @@ const int HEIGHT = 600;
 
 const bool DEBUG_NOISE = false;
 
-int main() {
-    std::cout << RAYLIB_VERSION << std::endl;
+auto DrawGrid() {
+    float y = 10;
+    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(10, y, 0), RED);
+    DrawText3D(GetFontDefault(), "x", rl::Vector3(10, y, 0), 15, 0, 0, true, RED);
+    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y + 10, 0), GREEN);
+    DrawText3D(GetFontDefault(), "y", rl::Vector3(0, y + 10, 0), 15, 0, 0, true, GREEN);
+    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y, 10), BLUE);
+    DrawText3D(GetFontDefault(), "z", rl::Vector3(0, y, 10), 15, 0, 0, true, BLUE);
+}
 
+int main() {
     rl::Window window(WIDTH, HEIGHT, "RLCraft");
 
+    MyCamera camera;
     World world;
 
     if(!DEBUG_NOISE)
@@ -27,18 +34,14 @@ int main() {
             for(int z = 0; z < CHUNKS_Z; z++)
                 world.GenerateChunk(rl::Vector2(x, z));
 
-    MyCamera camera;
-
     DisableCursor();
-
-    SetTargetFPS(60);
+    window.SetTargetFPS(60);
 
     while (!window.ShouldClose()) {
         camera.Update();
 
-        BeginDrawing();
-
-            ClearBackground(RAYWHITE);
+        window.BeginDrawing();
+            window.ClearBackground(RAYWHITE);
 
             if (DEBUG_NOISE) {
                 FastNoiseLite noise;
@@ -59,22 +62,14 @@ int main() {
             } else {
                 BeginMode3D(camera.camera);
 
-                    // Draw the axis and labels
-                    float y = 10;
-                    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(10, y, 0), RED);
-                    DrawText3D(GetFontDefault(), "x", rl::Vector3(10, y, 0), 15, 0, 0, true, RED);
-                    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y + 10, 0), GREEN);
-                    DrawText3D(GetFontDefault(), "y", rl::Vector3(0, y + 10, 0), 15, 0, 0, true, GREEN);
-                    DrawLine3D(rl::Vector3(0, y, 0), rl::Vector3(0, y, 10), BLUE);
-                    DrawText3D(GetFontDefault(), "z", rl::Vector3(0, y, 10), 15, 0, 0, true, BLUE);
+                    DrawGrid();
 
                     world.Draw();
 
                 EndMode3D();
             }
 
-        EndDrawing();
+        window.EndDrawing();
     }
-
-    return 0;
 }
+
