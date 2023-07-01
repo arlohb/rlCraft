@@ -38,14 +38,15 @@ void World::InitialGeneration() {
     for(i32 x = 0; x < CHUNKS_X; x++)
         for(i32 z = 0; z < CHUNKS_Z; z++) {
             i += 1;
-            int percent = width * i / max;
+            int cutoff = width * i / max;
+            int percent = 100 * i / max;
 
             std::cout << "\r[";
 
             for(int j = 0; j < width; j++)
-                if (j == percent)
+                if (j == cutoff)
                     std::cout << ">";
-                else if (j < percent)
+                else if (j < cutoff)
                     std::cout << "=";
                 else
                     std::cout << " ";
