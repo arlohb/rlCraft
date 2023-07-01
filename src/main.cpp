@@ -1,12 +1,12 @@
 #include <iostream>
 
-#include "../FastNoiseLite/Cpp/FastNoiseLite.h"
 
 #include "3dText.h"
 #include "camera.h"
 #include "chunk.h"
 #include "mesh.h"
 #include "world.h"
+#include "noise.h"
 
 const int WIDTH = 800;
 const int HEIGHT = 600;

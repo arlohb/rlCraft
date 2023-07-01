@@ -1,6 +1,5 @@
 #include "chunk.h"
-
-#include "../FastNoiseLite/Cpp/FastNoiseLite.h"
+#include "noise.h"
 
 Chunk::Chunk() {
     blocks = new Block[CHUNK_SIZE];
