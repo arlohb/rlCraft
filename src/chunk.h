@@ -2,9 +2,9 @@
 
 #include "block.h"
 
-#define CHUNK_WIDTH 16
-#define CHUNK_HEIGHT 255
-#define CHUNK_SIZE CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT
+const int CHUNK_WIDTH = 16;
+const int CHUNK_HEIGHT = 255;
+const int CHUNK_SIZE = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
 
 class Chunk {
     public:

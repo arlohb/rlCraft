@@ -6,8 +6,8 @@
 #include "chunk.h"
 #include "rl.h"
 
-#define CHUNKS_X 16
-#define CHUNKS_Z 16
+const int CHUNKS_X = 16;
+const int CHUNKS_Z = 16;
 
 class World {
     public:

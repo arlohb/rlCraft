@@ -10,10 +10,10 @@
 #include "mesh.h"
 #include "world.h"
 
-#define WIDTH 800
-#define HEIGHT 600
+const int WIDTH = 800;
+const int HEIGHT = 600;
 
-#define DEBUG_NOISE false
+const bool DEBUG_NOISE = false;
 
 int main() {
     std::cout << RAYLIB_VERSION << std::endl;
