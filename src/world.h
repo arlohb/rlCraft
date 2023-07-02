@@ -5,9 +5,6 @@
 
 #include "chunk.h"
 
-const i32 CHUNKS_X = 16;
-const i32 CHUNKS_Z = 16;
-
 class World {
     public:
         World();
