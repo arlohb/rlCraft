@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include "block.h"
 #include "noise.h"
 
@@ -20,6 +21,6 @@ class Chunk {
         void Generate(Noise& noise);
 
     private:
-        Block* blocks;
+        std::array<Block, CHUNK_SIZE> blocks;
 };
 

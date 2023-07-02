@@ -1,14 +1,10 @@
 #include "chunk.h"
 
 Chunk::Chunk() {
-    blocks = new Block[CHUNK_SIZE];
-
     pos = V2::Zero();
 }
 
 Chunk::Chunk(Vector2 _pos) {
-    blocks = new Block[CHUNK_SIZE];
-
     pos = _pos;
 }
 
