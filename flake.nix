@@ -9,7 +9,7 @@
       buildInputs = with pkgs; [
         clang-tools_16
         clang_16
-        bear
+        cmake
 
         # I copied the files from nixpkgs
         # and updated it myself.
@@ -17,7 +17,6 @@
 
         gdb
 
-        cmake
         xorg.libX11
         xorg.libXrandr
         xorg.libXinerama
