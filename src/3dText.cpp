@@ -97,7 +97,7 @@ void DrawText3D(Font font, const char *text, V3 position, f32 fontSize, f32 font
         {
             if ((codepoint != ' ') && (codepoint != '\t'))
             {
-                DrawTextCodepoint3D(font, codepoint, (V3){ position.x + textOffsetX, position.y, position.z + textOffsetY }, fontSize, backface, tint);
+                DrawTextCodepoint3D(font, codepoint, V3(position.x + textOffsetX, position.y, position.z + textOffsetY), fontSize, backface, tint);
             }
 
             if (font.glyphs[index].advanceX == 0) textOffsetX += (f32)(font.recs[index].width + fontSpacing) / (f32)font.baseSize * scale;

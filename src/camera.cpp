@@ -9,7 +9,7 @@ void PrintVector3(V3 v) {
 MyCamera::MyCamera() {
     SetExitKey(0);
 
-    camera = (Camera3D){};
+    camera = Camera3D {};
     camera.position = V3(0, 10, 10);
     camera.target = V3::Zero();
     camera.up = V3(0, 1, 0);
