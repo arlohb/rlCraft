@@ -10,13 +10,9 @@
         clang-tools_16
         clang_16
         cmake
-
-        # I copied the files from nixpkgs
-        # and updated it myself.
-        (pkgs.callPackage ./raylib.nix {})
-
         gdb
 
+        libGL
         xorg.libX11
         xorg.libXrandr
         xorg.libXinerama
