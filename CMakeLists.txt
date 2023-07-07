@@ -4,7 +4,9 @@ cmake_minimum_required(VERSION 3.25.3)
 #         COMPILER         #
 ############################
 
-set(CMAKE_BUILD_TYPE "Debug")
+if (UNIX)
+	set(CMAKE_BUILD_TYPE "Debug")
+endif(UNIX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
@@ -55,9 +57,11 @@ target_link_libraries(${PROJECT_NAME} raylib raylib_cpp)
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 
 # Symlink compile_commands to root dir
-file(CREATE_LINK
-    "${CMAKE_BINARY_DIR}/compile_commands.json"
-    "${CMAKE_SOURCE_DIR}/compile_commands.json"
-    SYMBOLIC
-)
+if (UNIX)
+	file(CREATE_LINK
+		"${CMAKE_BINARY_DIR}/compile_commands.json"
+		"${CMAKE_SOURCE_DIR}/compile_commands.json"
+		SYMBOLIC
+	)
+endif(UNIX)
 
