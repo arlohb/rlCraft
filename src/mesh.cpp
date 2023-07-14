@@ -1,10 +1,7 @@
 #include "mesh.h"
 
-#include <utility>
 #include <vector>
 #include <cstring>
-
-#include "types.h"
 
 struct Face {
     V3 pos;

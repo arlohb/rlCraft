@@ -1,7 +1,6 @@
 #include "world.h"
 
 #include <chrono>
-#include <iostream>
 #include "mesh.h"
 #include "progressBar.h"
 

@@ -24,6 +24,8 @@ i32 main() {
     SetTraceLogLevel(TraceLogLevel::LOG_ERROR);
     rl::Window window(WIDTH, HEIGHT, "RLCraft");
 
+    std::cout << __cplusplus << '\n';
+
     MyCamera camera;
     World world;
 
