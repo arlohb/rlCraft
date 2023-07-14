@@ -7,7 +7,7 @@
   in {
     devShells.x86_64-linux.default = pkgs.mkShell {
       buildInputs = with pkgs; [
-        clang-tools_16
+        ccls
         clang_16
         cmake
         gdb
