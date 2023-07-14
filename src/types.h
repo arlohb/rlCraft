@@ -17,18 +17,18 @@ DEF_TYPE(i8, char, 1);
 DEF_TYPE(i16, short, 2);
 DEF_TYPE(i32, int, 4);
 #ifdef _WIN32
-DEF_TYPE(i64, long long, 8);
+    DEF_TYPE(i64, long long, 8);
 #else
-DEF_TYPE(i64, long, 8);
+    DEF_TYPE(i64, long, 8);
 #endif
 
 DEF_TYPE(u8, unsigned char, 1);
 DEF_TYPE(u16, unsigned short, 2);
 DEF_TYPE(u32, unsigned int, 4);
 #ifdef _WIN32
-DEF_TYPE(u64, unsigned long long, 8);
+    DEF_TYPE(u64, unsigned long long, 8);
 #else
-DEF_TYPE(u64, unsigned long, 8);
+    DEF_TYPE(u64, unsigned long, 8);
 #endif
 typedef size_t usize;
 
