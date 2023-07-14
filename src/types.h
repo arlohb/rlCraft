@@ -2,13 +2,13 @@
 
 #include "rl.h"
 
-typedef rl::Vector2 V2;
-typedef rl::Vector3 V3;
-typedef rl::Vector4 V4;
+using V2 = rl::Vector2;
+using V3 = rl::Vector3;
+using V4 = rl::Vector4;
 
 #define DEF_TYPE(new, old, size)        \
     static_assert(sizeof(old) == size); \
-    typedef old new
+    using new = old
 
 DEF_TYPE(f32, float, 4);
 DEF_TYPE(f64, double, 8);
@@ -30,5 +30,5 @@ DEF_TYPE(u32, unsigned int, 4);
 #else
     DEF_TYPE(u64, unsigned long, 8);
 #endif
-typedef size_t usize;
+using usize = size_t;
 
